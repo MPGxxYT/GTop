@@ -1,0 +1,6 @@
+name: GTop
+version: '${project.version}'
+main: me.mortaldev.gtop.Main
+api-version: '1.19'
+authors: [MortalityDos]
+description: GTop plugin for JailBreak
