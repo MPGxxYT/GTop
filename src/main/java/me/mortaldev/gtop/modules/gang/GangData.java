@@ -9,47 +9,63 @@ import java.util.HashMap;
 
 public class GangData {
   private final String gangName;
-
-  // Stores the date and the amount of blocks mined that day.
-  // (will throughout said day)
   private final HashMap<Date, Integer> dateBlockCounterMap;
+  private Long allTimeCounter;
   private String banner;
+  private static final ItemStack DEFAULT_BANNER = new ItemStack(Material.WHITE_BANNER);
 
   public GangData(String gangName) {
-    this(gangName, new ItemStack(Material.WHITE_BANNER));
+    this(gangName, DEFAULT_BANNER);
   }
-  public GangData(String gangName, ItemStack banner) {
+
+  private GangData(String gangName, ItemStack banner) {
     this(gangName, ItemStackHelper.serialize(banner));
   }
-  public GangData(String gangName, String banner){
+
+  private GangData(String gangName, String banner) {
     this.gangName = gangName;
-    dateBlockCounterMap = new HashMap<>();
+    this.dateBlockCounterMap = new HashMap<>();
+    this.allTimeCounter = 0L;
     this.banner = banner;
   }
 
   public String getGangName() {
     return gangName;
   }
+
   public String getRawBanner() {
     return banner;
   }
+
+  public void setRawBanner(String data) {
+    banner = data;
+  }
+
   public ItemStack getBanner() {
     return ItemStackHelper.deserialize(banner);
   }
-  public Integer getBlocksOnDate(Date date){
+
+  public void setBanner(ItemStack itemStack) {
+    banner = ItemStackHelper.serialize(itemStack);
+  }
+
+  public Integer getBlocksOnDate(Date date) {
     if (dateBlockCounterMap.containsKey(date)) {
       return dateBlockCounterMap.get(date);
     }
     return null;
   }
-  public void setBlocksOnDate(Date date, Integer amount){
+
+  public Long getAllTimeCounter() {
+    return allTimeCounter;
+  }
+
+  public void setAllTimeCounter(Long allTimeCounter) {
+    this.allTimeCounter = allTimeCounter;
+  }
+
+  public void setBlocksOnDate(Date date, Integer amount) {
     dateBlockCounterMap.put(date, amount);
-  }
-  void setBanner(ItemStack itemStack){
-    banner = ItemStackHelper.serialize(itemStack);
-  }
-  void setRawBanner(String data){
-    banner = data;
   }
 
 }

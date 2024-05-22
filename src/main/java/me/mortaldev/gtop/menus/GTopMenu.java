@@ -1,6 +1,8 @@
 package me.mortaldev.gtop.menus;
 
 import me.mortaldev.gtop.Main;
+import me.mortaldev.gtop.modules.gang.GangData;
+import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.modules.menu.InventoryButton;
 import me.mortaldev.gtop.modules.menu.InventoryGUI;
 import me.mortaldev.gtop.utils.ItemStackHelper;
@@ -62,8 +64,9 @@ public class GTopMenu extends InventoryGUI {
     }
 
     // Display
-    for (Gang gang : allGangs) {
-      //GangManager.getBanner(gang)
+    List<GangData> gangDataList = GangManager.getGangDataList();
+    for (int i = 0; i < 9; i++) {
+
     }
 
     super.decorate(player);

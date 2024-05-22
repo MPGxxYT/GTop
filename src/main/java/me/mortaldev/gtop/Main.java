@@ -5,6 +5,9 @@ import me.mortaldev.gtop.commands.GTopCommand;
 import me.mortaldev.gtop.commands.LoreCommand;
 import me.mortaldev.gtop.commands.RenameCommand;
 import me.mortaldev.gtop.listeners.OnGangCommand;
+import me.mortaldev.gtop.listeners.OnGangCreate;
+import me.mortaldev.gtop.listeners.OnGangDisband;
+import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.modules.menu.GUIListener;
 import me.mortaldev.gtop.modules.menu.GUIManager;
 import org.bukkit.Bukkit;
@@ -58,6 +61,9 @@ public final class Main extends JavaPlugin {
             return;
         }
 
+        // Managers (Loading data)
+        GangManager.loadGangDataList();
+
         // GUIs
         guiManager = new GUIManager();
 
@@ -72,6 +78,8 @@ public final class Main extends JavaPlugin {
         // Events
 
         getServer().getPluginManager().registerEvents(new OnGangCommand(), this);
+        getServer().getPluginManager().registerEvents(new OnGangDisband(), this);
+        getServer().getPluginManager().registerEvents(new OnGangCreate(), this);
 
         // COMMANDS
         commandManager.registerCommand(new LoreCommand());
