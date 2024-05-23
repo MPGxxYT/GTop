@@ -8,36 +8,47 @@ import me.mortaldev.gtop.modules.menu.InventoryGUI;
 import me.mortaldev.gtop.utils.ItemStackHelper;
 import me.mortaldev.gtop.utils.TextUtil;
 import me.mortaldev.gtop.utils.Utils;
-import net.brcdev.gangs.GangsPlusApi;
-import net.brcdev.gangs.gang.Gang;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GTopMenu extends InventoryGUI {
 
-  static List<Gang> allGangs = GangsPlusApi.getAllGangs();
-  static int maxPage = (int) Math.ceil((double) allGangs.size() / 45);
+  LinkedHashMap<GangData, Long> topGangMap;
+  int maxPage;
   int page;
   ViewType viewType;
 
   public GTopMenu(int page, ViewType viewType) {
     this.viewType = viewType;
-    if (page > maxPage) {
-      this.page = maxPage;
-      return;
+    switch (viewType) {
+      case ALL_TIME -> topGangMap = getTopAllTime();
+      case MONTHLY -> topGangMap = getTopMonthly();
+      case WEEKLY -> topGangMap = getTopWeekly();
     }
-    this.page = page;
-
+    if(topGangMap.isEmpty()) {
+      this.maxPage = 1;
+      this.page = 1;
+    } else {
+      this.maxPage = (int) Math.ceil((double) topGangMap.size() / 45);
+      if (page > maxPage) {
+        this.page = maxPage;
+        return;
+      }
+      this.page = page;
+    }
   }
 
-  public int inventorySize(){
-    int size = (int) Math.ceil((double) allGangs.size() / 9);
-    return Utils.clamp(size, 3, 6);
+  public int inventorySize() {
+    int size = (int) Math.ceil((double) (topGangMap.size() - ((page-1)*45)) / 9);
+    return Utils.clamp(size + 1, 3, 6);
   }
 
   @Override
@@ -59,17 +70,90 @@ public class GTopMenu extends InventoryGUI {
     if (page > 1) {
       this.addButton(0, backButton());
     }
-    if (maxPage > 1) {
+    if (maxPage > 1 && maxPage != page) {
       this.addButton(8, nextButton());
     }
 
     // Display
-    List<GangData> gangDataList = GangManager.getGangDataList();
-    for (int i = 0; i < 9; i++) {
 
+    Iterator<Map.Entry<GangData, Long>> iterator = topGangMap.entrySet().iterator();
+    for (int i = 0; i < 45; i++) {
+      if (!iterator.hasNext()) {
+        break;
+      }
+      Map.Entry<GangData, Long> next = iterator.next();
+      ItemStack bannerItem = ItemStackHelper.builder(next.getKey().getBanner()).name("&e#" + (i + 1 + ((page-1)*45)) + " &l" + next.getKey().getGangName()).lore(new ArrayList<>()).addLore("&7 - " + String.format("%,d", next.getValue()) + " Blocks Mined").build();
+      bannerItem.editMeta(itemMeta -> {
+        itemMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
+      });
+      this.getInventory().setItem(i + 9, bannerItem);
     }
 
     super.decorate(player);
+  }
+
+  private LinkedHashMap<GangData, Long> getTopAllTime() {
+    List<GangData> gangDataList = GangManager.getGangDataList();
+    LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
+    for (GangData gangData : gangDataList) {
+      if (gangData.getAllTimeCounter() > 0) {
+        unsortedMap.put(gangData, gangData.getAllTimeCounter());
+      }
+    }
+    return sortLinkedHash(unsortedMap);
+  }
+
+  private LinkedHashMap<GangData, Long> getTopMonthly() {
+    List<GangData> gangDataList = GangManager.getGangDataList();
+    LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
+    List<LocalDate> localDates = GangManager.todayMonth();
+    for (GangData gangData : gangDataList) {
+      Long totalAmount = 0L;
+      for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
+        if (!localDates.contains(entry.getKey())) {
+          continue;
+        }
+        totalAmount += entry.getValue();
+      }
+      if (totalAmount > 0) {
+        unsortedMap.put(gangData, totalAmount);
+      }
+    }
+    return sortLinkedHash(unsortedMap);
+  }
+
+  private LinkedHashMap<GangData, Long> getTopWeekly() {
+    List<GangData> gangDataList = GangManager.getGangDataList();
+    LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
+    List<LocalDate> localDates = GangManager.todayWeek();
+    for (GangData gangData : gangDataList) {
+      Long totalAmount = 0L;
+      for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
+        if (!localDates.contains(entry.getKey())) {
+          continue;
+        }
+        totalAmount += entry.getValue();
+      }
+      if (totalAmount > 0) {
+        unsortedMap.put(gangData, totalAmount);
+      }
+    }
+    return sortLinkedHash(unsortedMap);
+  }
+
+  private LinkedHashMap<GangData, Long> sortLinkedHash(LinkedHashMap<GangData, Long> unsortedMap) {
+    int skip = (page - 1) * 45;
+    if (skip < 0) {
+      skip = 0;
+    }
+    return unsortedMap.entrySet().stream().skip(skip).limit(45)
+        .sorted(Map.Entry.<GangData, Long>comparingByValue().reversed())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            (e1, e2) -> e1,
+            LinkedHashMap::new
+        ));
   }
 
   private InventoryButton weeklyButton() {

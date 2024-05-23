@@ -16,12 +16,10 @@ public class GangDataCRUD {
   public static void saveGangData(GangData gangData){
     File filePath = new File(PATH + gangData.getGangName() + ".json");
     GSON.saveJsonObject(filePath, gangData);
-    Bukkit.getLogger().info("GangData Saved to File: " + gangData.getGangName());
   }
   public static GangData getGangData(String gangName) {
     File filePath = new File(PATH + gangName + ".json");
     if (filePath.exists()) {
-      Bukkit.getLogger().info("Retrieved GangData: " + gangName);
       return GSON.getJsonObject(filePath, GangData.class);
     } else {
       throw new IllegalArgumentException("Could not get GangData: '" + gangName + "' does not exist.");
