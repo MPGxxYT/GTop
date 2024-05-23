@@ -58,9 +58,7 @@ public class GangManager {
         gangNameList.add(name);
       }
     }
-    Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
-      updateToGangList(gangNameList);
-    }, 60);
+    Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> updateToGangList(gangNameList), 60);
     Bukkit.getLogger().info("GangData Loaded. (" + gangDataList.size() + ")");
   }
 

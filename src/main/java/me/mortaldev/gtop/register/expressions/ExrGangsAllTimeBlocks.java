@@ -11,7 +11,7 @@ import org.bukkit.event.Event;
 import javax.annotation.Nullable;
 
 
-@SuppressWarnings({"NullableProblems", "unchecked"})
+@SuppressWarnings({"NullableProblems"})
 public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> {
 
   static {

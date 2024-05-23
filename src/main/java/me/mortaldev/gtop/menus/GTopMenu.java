@@ -83,9 +83,7 @@ public class GTopMenu extends InventoryGUI {
       }
       Map.Entry<GangData, Long> next = iterator.next();
       ItemStack bannerItem = ItemStackHelper.builder(next.getKey().getBanner()).name("&e#" + (i + 1 + ((page-1)*45)) + " &l" + next.getKey().getGangName()).lore(new ArrayList<>()).addLore("&7 - " + String.format("%,d", next.getValue()) + " Blocks Mined").build();
-      bannerItem.editMeta(itemMeta -> {
-        itemMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
-      });
+      bannerItem.editMeta(itemMeta -> itemMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS));
       this.getInventory().setItem(i + 9, bannerItem);
     }
 

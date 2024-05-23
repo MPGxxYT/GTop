@@ -113,7 +113,7 @@ public final class Main extends JavaPlugin {
   }
 
   private void setPeriodicSaves(boolean b) {
-    Long timeBetweenSaves = 30L;
+    long timeBetweenSaves = 30L;
     if (b) {
       tasks.put("gangSaves", Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GangManager::saveGangDataList, 0L, (20L * 60L) * timeBetweenSaves));
     } else {
