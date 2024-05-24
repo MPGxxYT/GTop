@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 public class TextUtil {
 
-
   /**
    * Replaces any special characters in the given string with underscores.
    *

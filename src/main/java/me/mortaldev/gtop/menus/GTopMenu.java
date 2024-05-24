@@ -91,7 +91,7 @@ public class GTopMenu extends InventoryGUI {
   }
 
   private LinkedHashMap<GangData, Long> getTopAllTime() {
-    List<GangData> gangDataList = GangManager.getGangDataList();
+    HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
     for (GangData gangData : gangDataList) {
       if (gangData.getAllTimeCounter() > 0) {
@@ -102,9 +102,9 @@ public class GTopMenu extends InventoryGUI {
   }
 
   private LinkedHashMap<GangData, Long> getTopMonthly() {
-    List<GangData> gangDataList = GangManager.getGangDataList();
+    HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
-    List<LocalDate> localDates = GangManager.todayMonth();
+    HashSet<LocalDate> localDates = GangManager.todayMonth();
     for (GangData gangData : gangDataList) {
       Long totalAmount = 0L;
       for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
@@ -121,9 +121,9 @@ public class GTopMenu extends InventoryGUI {
   }
 
   private LinkedHashMap<GangData, Long> getTopWeekly() {
-    List<GangData> gangDataList = GangManager.getGangDataList();
+    HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
-    List<LocalDate> localDates = GangManager.todayWeek();
+    HashSet<LocalDate> localDates = GangManager.todayWeek();
     for (GangData gangData : gangDataList) {
       Long totalAmount = 0L;
       for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {

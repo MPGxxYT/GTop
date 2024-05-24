@@ -12,38 +12,38 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GangManager {
+  private static HashSet<GangData> gangDataList;
 
-  private static List<GangData> gangDataList;
-
+  // Returns the EST timezone date.
   public static LocalDate todayDate() {
     return ZonedDateTime.now(ZoneId.of("-05:00")).toLocalDate();
   }
 
-  public static List<LocalDate> todayWeek() {
+  public static HashSet<LocalDate> todayWeek() {
     LocalDate today = todayDate();
     LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
     LocalDate sunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-
     return Stream.iterate(monday, date -> date.plusDays(1))
         .limit((sunday.toEpochDay() - monday.toEpochDay()) + 1)
-        .toList();
+        .collect(Collectors.toCollection(HashSet::new));
   }
 
-  public static List<LocalDate> todayMonth() {
+  public static HashSet<LocalDate> todayMonth() {
     LocalDate today = todayDate();
     LocalDate startOfMonth = LocalDate.of(today.getYear(), today.getMonth(), 1);
     LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
     return Stream.iterate(startOfMonth, date -> date.plusDays(1))
         .limit((endOfMonth.toEpochDay() - startOfMonth.toEpochDay()) + 1)
-        .toList();
+        .collect(Collectors.toCollection(HashSet::new));
   }
 
   public static void loadGangDataList() {
-    gangDataList = new ArrayList<>();
+    gangDataList = new HashSet<>();
     File mainPath = new File(GangDataCRUD.getPATH());
     if (!mainPath.exists()) {
       mainPath.mkdirs();
@@ -99,10 +99,9 @@ public class GangManager {
     loadGangDataList();
   }
 
-  public static List<GangData> getGangDataList() {
+  public static HashSet<GangData> getGangDataList() {
     return gangDataList;
   }
-
   public static GangData getGangData(Gang gang) {
     return getGangData(gang.getName());
   }
