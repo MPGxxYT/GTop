@@ -33,7 +33,7 @@ set gang's all time blocks of {_gang} to 5
 
 <summary>Gangs Blocks</summary>
 
-#### Gangs Blocks : Property Expression
+### Gangs Blocks : Property Expression
 The blocks a gang has mined today in EST time zone.
 
 `gang['s] blocks`
@@ -49,7 +49,7 @@ add 15 to gang's blocks of {_gang}
 
 <summary>Player's Gang</summary>
 
-#### Player's Gang : Expression
+### Player's Gang : Expression
 The gang of a player. Returns `<none>` if not in a gang.
 
 `%player%['s] gang`
