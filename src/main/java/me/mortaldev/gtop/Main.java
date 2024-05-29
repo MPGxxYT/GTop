@@ -4,8 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import co.aikar.commands.PaperCommandManager;
 import me.mortaldev.gtop.commands.GTopCommand;
-import me.mortaldev.gtop.commands.LoreCommand;
-import me.mortaldev.gtop.commands.RenameCommand;
+import me.mortaldev.gtop.configs.MainConfig;
 import me.mortaldev.gtop.listeners.OnGangCommand;
 import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
@@ -17,18 +16,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public final class Main extends JavaPlugin {
 
   private static final String LABEL = "GTop";
   static Main instance;
+  static HashSet<String> dependencies = new HashSet<>() {{
+    add("GangsPlus");
+    add("Skript");
+  }};
   static PaperCommandManager commandManager;
   static GUIManager guiManager;
   static HashMap<String, Integer> tasks = new HashMap<>();
-
-  public static PaperCommandManager getCommandManager() {
-    return commandManager;
-  }
+  private static MainConfig mainConfig;
 
   public static Main getInstance() {
     return instance;
@@ -40,6 +41,14 @@ public final class Main extends JavaPlugin {
 
   public static GUIManager getGuiManager() {
     return guiManager;
+  }
+
+  public static MainConfig getMainConfig() {
+    return mainConfig;
+  }
+
+  public static void log(String message) {
+    Bukkit.getLogger().info("[" + Main.getLabel() + "] " + message);
   }
 
   @Override
@@ -55,30 +64,24 @@ public final class Main extends JavaPlugin {
 
     // DEPENDENCIES
 
-    if (Bukkit.getPluginManager().getPlugin("GangsPlus") == null) {
-      getLogger().warning("Could not find GangsPlus! This plugin is required.");
-      Bukkit.getPluginManager().disablePlugin(this);
-      return;
+    for (String plugin : dependencies) {
+      if (Bukkit.getPluginManager().getPlugin(plugin) == null) {
+        getLogger().warning("Could not find " + plugin + "! This plugin is required.");
+        Bukkit.getPluginManager().disablePlugin(this);
+        return;
+      }
     }
 
-    if (Bukkit.getPluginManager().getPlugin("Skript") == null) {
-      getLogger().warning("Could not find Skript! This plugin is required.");
-      Bukkit.getPluginManager().disablePlugin(this);
-      return;
-    }
+    // CONFIGS
+    mainConfig = new MainConfig();
 
     // Managers (Loading data)
     GangManager.loadGangDataList();
 
-    // GUIs
+    // GUI Manager
     guiManager = new GUIManager();
-
     GUIListener guiListener = new GUIListener(guiManager);
     Bukkit.getPluginManager().registerEvents(guiListener, this);
-
-    // CONFIGS
-//        WildConfig.loadConfig(true);
-//        MainConfig.loadConfig(true);
 
 
     // Events
@@ -89,9 +92,11 @@ public final class Main extends JavaPlugin {
 
     // COMMANDS
 
-    commandManager.registerCommand(new LoreCommand());
-    commandManager.registerCommand(new RenameCommand());
+//    commandManager.registerCommand(new LoreCommand());
+//    commandManager.registerCommand(new RenameCommand());
     commandManager.registerCommand(new GTopCommand());
+
+    // Skript API
 
     SkriptAddon addon = Skript.registerAddon(this);
     try {
@@ -107,16 +112,25 @@ public final class Main extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    setPeriodicSaves(false);
+    if (isPeriodicallySaving()) {
+      setPeriodicSaves(false);
+    }
     GangManager.saveGangDataList();
     getLogger().info(LABEL + " Disabled");
   }
 
-  private void setPeriodicSaves(boolean b) {
-    long timeBetweenSaves = 30L;
-    if (b) {
-      tasks.put("gangSaves", Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GangManager::saveGangDataList, 0L, (20L * 60L) * timeBetweenSaves));
-    } else {
+  public boolean isPeriodicallySaving() {
+    return tasks.containsKey("gangSaves");
+  }
+
+  public void setPeriodicSaves(boolean b) {
+    if (b && !isPeriodicallySaving()) {
+      if (mainConfig.getSaveInterval() <= 0) {
+        return;
+      }
+      long saveInterval = (20L * 60L) * mainConfig.getSaveInterval();
+      tasks.put("gangSaves", Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GangManager::saveGangDataList, saveInterval, saveInterval));
+    } else if (isPeriodicallySaving()) {
       Bukkit.getScheduler().cancelTask(tasks.remove("gangSaves"));
     }
   }

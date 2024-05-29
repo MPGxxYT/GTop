@@ -1,6 +1,7 @@
 # GTop
 
 This plugin is used to track the blocks mined in a Gang.
+It also has some Skript Integration with the GangsPlusAPI.
 
 ## Dependencies
 This plugin has two dependencies at the moment.
@@ -9,7 +10,9 @@ This plugin has two dependencies at the moment.
  - [Gangs+](https://www.spigotmc.org/resources/gangs-1-8-1-20.2604/)
 ## Commands
 
-`/gtop` Brings up the GTop Menu displaying the stats.
+- `/gtop` Brings up the GTop Menu displaying the stats.
+- `/gtop save` Saves the current gang data to file ~ **Perm: gtop.admin**
+- `/gtop reload` Reloads the main config ~ **Perm: gtop.admin**
 
 
 ## Skript Expressions
@@ -40,7 +43,7 @@ The blocks a gang has mined today in EST time zone.
 
 example: 
 ```java
-add 15 to gang's blocks of {_gang}
+add 15 to gang blocks of {_gang}
 ```
 
 </details> 
@@ -54,12 +57,15 @@ The gang of a player. Returns `<none>` if not in a gang.
 
 `%player%['s] gang`
 
-example: `set {_gang} to player's gang`
+example: 
+```java
+set {_gang} to player's gang
+```
 
-</details> 
+</details>
 
 ## Plans / To-do
-- [ ] v1.1 ( In Progress )
-  - [ ] Add Config
+- [X] v1.1 ( Done )
+  - [X] Add Config
 - [ ] v1.2 
-  - [ ] Refactor Code
+  - [ ] Refactor & Optimize Code

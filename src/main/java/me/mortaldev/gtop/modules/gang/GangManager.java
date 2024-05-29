@@ -6,7 +6,7 @@ import net.brcdev.gangs.gang.Gang;
 import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.time.DayOfWeek;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GangManager {
+  public static final String GANG_DATA_SAVED = "GangData Saved. ({0})";
+  public static final String GANG_DATA_LOADED = "GangData Loaded. ({0})";
   private static HashSet<GangData> gangDataList;
 
   // Returns the EST timezone date.
@@ -25,10 +27,10 @@ public class GangManager {
 
   public static HashSet<LocalDate> todayWeek() {
     LocalDate today = todayDate();
-    LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-    LocalDate sunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-    return Stream.iterate(monday, date -> date.plusDays(1))
-        .limit((sunday.toEpochDay() - monday.toEpochDay()) + 1)
+    LocalDate begin = today.with(TemporalAdjusters.previousOrSame(Main.getMainConfig().getWeekBegin()));
+    LocalDate end = today.with(TemporalAdjusters.nextOrSame(Main.getMainConfig().getWeekEnd()));
+    return Stream.iterate(begin, date -> date.plusDays(1))
+        .limit((end.toEpochDay() - begin.toEpochDay()) + 1)
         .collect(Collectors.toCollection(HashSet::new));
   }
 
@@ -59,7 +61,8 @@ public class GangManager {
       }
     }
     Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> updateToGangList(gangNameList), 60);
-    Bukkit.getLogger().info("GangData Loaded. (" + gangDataList.size() + ")");
+    String message = MessageFormat.format(GANG_DATA_LOADED, gangDataList.size());
+    Main.log(message);
   }
 
   private static void updateToGangList(List<String> gangNameList) {
@@ -92,7 +95,8 @@ public class GangManager {
     for (GangData gangData : gangDataList) {
       GangDataCRUD.saveGangData(gangData);
     }
-    Bukkit.getLogger().info("GangData Saved. (" + gangDataList.size() + ")");
+    String message = MessageFormat.format(GANG_DATA_SAVED, gangDataList.size());
+    Main.log(message);
   }
 
   public static void updateGangDataList() {
@@ -102,6 +106,7 @@ public class GangManager {
   public static HashSet<GangData> getGangDataList() {
     return gangDataList;
   }
+
   public static GangData getGangData(Gang gang) {
     return getGangData(gang.getName());
   }

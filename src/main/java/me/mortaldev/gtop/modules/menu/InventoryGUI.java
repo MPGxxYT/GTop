@@ -12,10 +12,10 @@ import java.util.Map;
 
 public abstract class InventoryGUI implements InventoryHandler {
 
+  private final Map<Integer, InventoryButton> buttonMap = new HashMap<>();
   private boolean allowBottomInventoryClick;
   private boolean allowTopInventoryClick;
   private Inventory inventory;
-  private final Map<Integer, InventoryButton> buttonMap = new HashMap<>();
 
   public InventoryGUI() {
     allowBottomInventoryClick = false;
@@ -59,11 +59,11 @@ public abstract class InventoryGUI implements InventoryHandler {
         && !allowTopInventoryClick) {
       event.setCancelled(true);
     }
-      if (event.getView().getTopInventory() == event.getClickedInventory()) {
-          int slot = event.getSlot();
-          InventoryButton button = this.buttonMap.get(slot);
-          if (button != null) {
-              button.getEventConsumer().accept(event);
+    if (event.getView().getTopInventory() == event.getClickedInventory()) {
+      int slot = event.getSlot();
+      InventoryButton button = this.buttonMap.get(slot);
+      if (button != null) {
+        button.getEventConsumer().accept(event);
       }
     }
   }
@@ -74,7 +74,8 @@ public abstract class InventoryGUI implements InventoryHandler {
   }
 
   @Override
-  public void onClose(InventoryCloseEvent event) {}
+  public void onClose(InventoryCloseEvent event) {
+  }
 
   protected abstract Inventory createInventory();
 }
