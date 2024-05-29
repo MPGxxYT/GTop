@@ -2,12 +2,13 @@ package me.mortaldev.gtop.modules.gang;
 
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.utils.GSON;
-import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 public class GangDataCRUD {
   private static final String PATH = Main.getInstance().getDataFolder() + "/gangData/";
+  public static final String GANG_DATA_DELETED = "GangDate Deleted: {0}";
 
   public static String getPATH() {
     return PATH;
@@ -29,7 +30,8 @@ public class GangDataCRUD {
     File filePath = new File(PATH + gangName + ".json");
     if (filePath.exists()) {
       filePath.delete();
-      Bukkit.getLogger().info("GangData Deleted: " + gangName);
+      String message = MessageFormat.format(GANG_DATA_DELETED, gangName);
+      Main.log(message);
     } else {
       throw new IllegalArgumentException("Could not delete GangData: '" + gangName + "' does not exist.");
     }

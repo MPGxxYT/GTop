@@ -1,0 +1,10 @@
+
+# The plugin saves the blocks mined data to file every x amount of minutes. Default is 30.
+# It also saves the data on disable and loads it on enable.
+# This value is in minutes. Set to 0 to disable.
+saveInterval: 30
+
+# The span of weekday for displaying weekly blocks mined data.
+# Default is weekBegin: "Sunday" & weekEnd: "Saturday"
+weekBegin: "Sunday"
+weekEnd: "Saturday"
