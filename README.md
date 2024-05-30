@@ -67,5 +67,9 @@ set {_gang} to player's gang
 ## Plans / To-do
 - [X] v1.1 ( Done )
   - [X] Add Config
+- [ ] v1.1.1 
+  - [ ] Display the Dates of Week in GUI
+  - [ ] Display the Month Name in GUI
+  - [ ] Find a way to allow weeks less than 7 days
 - [ ] v1.2 
   - [ ] Refactor & Optimize Code
