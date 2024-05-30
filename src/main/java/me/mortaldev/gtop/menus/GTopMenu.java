@@ -53,7 +53,7 @@ public class GTopMenu extends InventoryGUI {
 
   @Override
   protected Inventory createInventory() {
-    return Bukkit.createInventory(null, inventorySize() * 9, TextUtil.format("&3&lJBCrates"));
+    return Bukkit.createInventory(null, inventorySize() * 9, TextUtil.format("GTop"));
   }
 
   @Override
