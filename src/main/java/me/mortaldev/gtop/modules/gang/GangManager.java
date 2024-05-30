@@ -77,7 +77,6 @@ public class GangManager {
       if (next == null) {
         break;
       }
-      Bukkit.getLogger().info(next.getKey().getGangName() + " | " + next.getValue());
       report.addData(next.getKey().getGangName(), next.getValue());
     }
     report.saveReport();
