@@ -8,3 +8,6 @@ saveInterval: 30
 # Default is weekBegin: "Sunday" & weekEnd: "Saturday"
 weekBegin: "Sunday"
 weekEnd: "Saturday"
+
+# The top x of gangs to report when using /gtop report.
+reportCount: 3

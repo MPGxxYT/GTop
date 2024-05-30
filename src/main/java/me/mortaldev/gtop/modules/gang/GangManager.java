@@ -1,6 +1,8 @@
 package me.mortaldev.gtop.modules.gang;
 
 import me.mortaldev.gtop.Main;
+import me.mortaldev.gtop.menus.GTopMenu;
+import me.mortaldev.gtop.modules.Report;
 import net.brcdev.gangs.GangsPlusApi;
 import net.brcdev.gangs.gang.Gang;
 import org.bukkit.Bukkit;
@@ -63,6 +65,22 @@ public class GangManager {
     Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> updateToGangList(gangNameList), 60);
     String message = MessageFormat.format(GANG_DATA_LOADED, gangDataList.size());
     Main.log(message);
+  }
+
+  public static void makeReport(){
+    LinkedHashMap<GangData, Long> topMonthly = new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopMonthly();
+    int reportCount = Main.getMainConfig().getReportCount();
+    Report report = new Report();
+    Iterator<Map.Entry<GangData, Long>> iterator = topMonthly.entrySet().iterator();
+    for (int i = 0; i < reportCount; i++) {
+      Map.Entry<GangData, Long> next = iterator.next();
+      if (next == null) {
+        break;
+      }
+      Bukkit.getLogger().info(next.getKey().getGangName() + " | " + next.getValue());
+      report.addData(next.getKey().getGangName(), next.getValue());
+    }
+    report.saveReport();
   }
 
   private static void updateToGangList(List<String> gangNameList) {

@@ -35,4 +35,11 @@ public class GTopCommand extends BaseCommand {
     sender.sendMessage("Attempting to save gang data.");
     GangManager.saveGangDataList();
   }
+
+  @Subcommand("report")
+  @CommandPermission("gtop.admin")
+  public void makeReport(CommandSender sender) {
+    GangManager.makeReport();
+    sender.sendMessage("Saving a report.");
+  }
 }

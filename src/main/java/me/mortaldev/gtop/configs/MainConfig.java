@@ -10,6 +10,7 @@ import java.time.DayOfWeek;
 
 public class MainConfig extends AbstractConfig {
   private int saveInterval;
+  private int reportCount;
   private DayOfWeek weekBegin;
   private DayOfWeek weekEnd;
 
@@ -30,6 +31,7 @@ public class MainConfig extends AbstractConfig {
   protected void loadInitialConfig() {
     super.loadInitialConfig();
     saveInterval = getConfig().getInt("saveInterval");
+    reportCount = getConfig().getInt("reportCount");
     weekBegin = loadDayOfWeekValue("weekBegin", DayOfWeek.SUNDAY);
     weekEnd = loadDayOfWeekValue("weekEnd", DayOfWeek.SATURDAY);
   }
@@ -78,5 +80,14 @@ public class MainConfig extends AbstractConfig {
   public void setWeekEnd(DayOfWeek weekEnd) {
     this.weekEnd = weekEnd;
     setValue("weekEnd", weekEnd.toString());
+  }
+
+  public int getReportCount() {
+    return reportCount;
+  }
+
+  public void setReportCount(int reportCount) {
+    this.reportCount = reportCount;
+    setValue("reportCount", reportCount);
   }
 }

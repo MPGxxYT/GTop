@@ -65,7 +65,10 @@ set {_gang} to player's gang
 </details>
 
 ## Plans / To-do
-- [ ] v1.1.2 
+- [X] v1.1.1
+  - [X] Add basic ability to make reports.
+- [ ] v1.1.2
+  - [ ] Improve report feature to allow all time, monthly & weekly.
   - [ ] Display the Dates of Week in GUI
   - [ ] Display the Month Name in GUI
   - [ ] Find a way to allow weeks less than 7 days

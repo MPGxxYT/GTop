@@ -90,7 +90,7 @@ public class GTopMenu extends InventoryGUI {
     super.decorate(player);
   }
 
-  private LinkedHashMap<GangData, Long> getTopAllTime() {
+  public LinkedHashMap<GangData, Long> getTopAllTime() {
     HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
     for (GangData gangData : gangDataList) {
@@ -101,7 +101,7 @@ public class GTopMenu extends InventoryGUI {
     return sortLinkedHash(unsortedMap);
   }
 
-  private LinkedHashMap<GangData, Long> getTopMonthly() {
+  public LinkedHashMap<GangData, Long> getTopMonthly() {
     HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
     HashSet<LocalDate> localDates = GangManager.todayMonth();
@@ -120,7 +120,7 @@ public class GTopMenu extends InventoryGUI {
     return sortLinkedHash(unsortedMap);
   }
 
-  private LinkedHashMap<GangData, Long> getTopWeekly() {
+  public LinkedHashMap<GangData, Long> getTopWeekly() {
     HashSet<GangData> gangDataList = GangManager.getGangDataList();
     LinkedHashMap<GangData, Long> unsortedMap = new LinkedHashMap<>();
     HashSet<LocalDate> localDates = GangManager.todayWeek();
