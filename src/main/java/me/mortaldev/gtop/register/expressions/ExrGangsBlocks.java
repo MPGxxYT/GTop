@@ -64,6 +64,7 @@ public class ExrGangsBlocks extends SimplePropertyExpression<Gang, Long> {
       }
       default -> gangData.setBlocksCountOnDate(GangManager.todayDate(), 0L);
     }
+    GangManager.addToUpdatedSet(gangData);
   }
 
   @Override

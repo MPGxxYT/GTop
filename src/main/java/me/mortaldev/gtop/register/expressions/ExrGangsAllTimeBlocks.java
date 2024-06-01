@@ -63,6 +63,7 @@ public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> 
       }
       default -> gangData.setAllTimeCounter(0L);
     }
+    GangManager.addToUpdatedSet(gangData);
   }
 
   @Override

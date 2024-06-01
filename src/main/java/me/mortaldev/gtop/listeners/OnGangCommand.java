@@ -6,8 +6,6 @@ import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.utils.TextUtil;
 import net.brcdev.gangs.GangsPlusApi;
 import net.brcdev.gangs.gang.Gang;
-import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,9 +36,10 @@ public class OnGangCommand implements Listener {
             return;
           }
           ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-          if (itemInMainHand.getType().equals(Material.AIR) || !Tag.BANNERS.isTagged(itemInMainHand.getType())) {
-            player.sendMessage(TextUtil.format("&cYou must be holding a banner."));
-          }
+//          if (itemInMainHand.getType().equals(Material.AIR) || !Tag.BANNERS.isTagged(itemInMainHand.getType())) {
+//            player.sendMessage(TextUtil.format("&cYou must be holding a banner."));
+//            return;
+//          }
           GangData gangData = GangManager.getGangData(gang);
           gangData.setBanner(itemInMainHand);
           player.sendMessage(TextUtil.format("&eGang Banner Set!"));

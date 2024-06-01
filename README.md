@@ -65,11 +65,10 @@ set {_gang} to player's gang
 </details>
 
 ## Plans / To-do
-- [X] v1.1.1
-  - [X] Add basic ability to make reports.
-- [ ] v1.1.2
-  - [ ] Improve GangData Saving System
-    - [ ] Only save gangData that changed since the last save. 
+- [X] v1.1.2
+  - [X] Improve GangData Saving System
+    - [X] Only save gangData that changed since the last save.
+- [ ] v1.1.3
   - [ ] Improve report feature to allow all time, monthly & weekly.
   - [ ] Display the Dates of Week in GUI
   - [ ] Display the Month Name in GUI
