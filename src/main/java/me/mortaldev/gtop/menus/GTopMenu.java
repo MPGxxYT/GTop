@@ -33,7 +33,7 @@ public class GTopMenu extends InventoryGUI {
       case MONTHLY -> topGangMap = getTopMonthly();
       case WEEKLY -> topGangMap = getTopWeekly();
     }
-    if(topGangMap.isEmpty()) {
+    if (topGangMap.isEmpty()) {
       this.maxPage = 1;
       this.page = 1;
     } else {
@@ -47,7 +47,7 @@ public class GTopMenu extends InventoryGUI {
   }
 
   public int inventorySize() {
-    int size = (int) Math.ceil((double) (topGangMap.size() - ((page-1)*45)) / 9);
+    int size = (int) Math.ceil((double) (topGangMap.size() - ((page - 1) * 45)) / 9);
     return Utils.clamp(size + 1, 3, 6);
   }
 
@@ -82,7 +82,7 @@ public class GTopMenu extends InventoryGUI {
         break;
       }
       Map.Entry<GangData, Long> next = iterator.next();
-      ItemStack bannerItem = ItemStackHelper.builder(next.getKey().getBanner()).name("&e#" + (i + 1 + ((page-1)*45)) + " &l" + next.getKey().getGangName()).lore(new ArrayList<>()).addLore("&7 - " + String.format("%,d", next.getValue()) + " Blocks Mined").build();
+      ItemStack bannerItem = ItemStackHelper.builder(next.getKey().getBanner()).name("&e#" + (i + 1 + ((page - 1) * 45)) + " &l" + next.getKey().getGangName()).lore(new ArrayList<>()).addLore("&7 - " + String.format("%,d", next.getValue()) + " Blocks Mined").build();
       bannerItem.editMeta(itemMeta -> itemMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS));
       this.getInventory().setItem(i + 9, bannerItem);
     }
