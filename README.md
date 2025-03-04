@@ -6,8 +6,8 @@ It also has some Skript Integration with the GangsPlusAPI.
 ## Dependencies
 This plugin has two dependencies at the moment.
 
- - [Skript](https://github.com/SkriptLang/Skript)
- - [Gangs+](https://www.spigotmc.org/resources/gangs-1-8-1-20.2604/)
+- [Skript](https://github.com/SkriptLang/Skript)
+- [Gangs+](https://www.spigotmc.org/resources/gangs-1-8-1-20.2604/)
 ## Commands
 
 - `/gtop` Brings up the GTop Menu displaying the stats.
@@ -26,7 +26,7 @@ The count of all the blocks a gang has ever mined.
 
 `gang['s] all[ ]time blocks`
 
-example: 
+example:
 ```java
 set gang's all time blocks of {_gang} to 5
 ```
@@ -41,7 +41,7 @@ The blocks a gang has mined today in EST time zone.
 
 `gang['s] blocks`
 
-example: 
+example:
 ```java
 add 15 to gang blocks of {_gang}
 ```
@@ -57,7 +57,7 @@ The gang of a player. Returns `<none>` if not in a gang.
 
 `%player%['s] gang`
 
-example: 
+example:
 ```java
 set {_gang} to player's gang
 ```
@@ -68,9 +68,16 @@ set {_gang} to player's gang
 - [X] v1.1.2
   - [X] Improve GangData Saving System
     - [X] Only save gangData that changed since the last save.
+- [X] v1.1.3
+  - [X] Fix & Refactor the Menu
+  - [X] Refactor the GangData Saving System
+- [ ] v1.1.4
+  - [ ] Automatic reports
+  - [ ] Config setting for data length
+- [ ] v1.1.5
   - [ ] Improve report feature to allow all time, monthly & weekly.
   - [ ] Display the Dates of Week in GUI
   - [ ] Display the Month Name in GUI
   - [ ] Find a way to allow weeks less than 7 days
-- [ ] v1.2 
+- [ ] v1.2
   - [ ] Refactor & Optimize Code
