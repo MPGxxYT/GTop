@@ -16,12 +16,12 @@ import java.util.stream.Stream;
 
 public class GangManager extends CRUDManager<GangData> {
 
-  private GangManager() {
-  }
+  private GangManager() {}
 
   public static GangManager getInstance() {
     return Singleton.INSTANCE;
   }
+  HashSet<GangData> updatedGangs = new HashSet<>();
 
   // Returns the EST timezone date.
   public LocalDate todayDate() {
@@ -55,34 +55,55 @@ public class GangManager extends CRUDManager<GangData> {
 
   public void makeReport() {
     LinkedHashMap<GangData, Long> topMonthly = new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopMonthly();
+    LinkedHashMap<GangData, Long> topWeekly = new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopWeekly();
+    LinkedHashMap<GangData, Long> topAllTime = new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopAllTime();
     int reportCount = Main.getMainConfig().getReportCount();
     Report report = new Report();
-    Iterator<Map.Entry<GangData, Long>> iterator = topMonthly.entrySet().iterator();
+    Iterator<Map.Entry<GangData, Long>> monthlyIterator = topMonthly.entrySet().iterator();
+    Iterator<Map.Entry<GangData, Long>> weeklyIterator = topWeekly.entrySet().iterator();
+    Iterator<Map.Entry<GangData, Long>> allTimeIterator = topAllTime.entrySet().iterator();
+
     for (int i = 0; i < reportCount; i++) {
-      if (!iterator.hasNext()) {
-        break;
+      if (monthlyIterator.hasNext()) {
+        Map.Entry<GangData, Long> next = monthlyIterator.next();
+        report.addMonthData(next.getKey().getGangName(), next.getValue());
       }
-      Map.Entry<GangData, Long> next = iterator.next();
-      report.addData(next.getKey().getGangName(), next.getValue());
+      if (weeklyIterator.hasNext()) {
+        Map.Entry<GangData, Long> next = weeklyIterator.next();
+        report.addWeekData(next.getKey().getGangName(), next.getValue());
+      }
+      if (allTimeIterator.hasNext()) {
+        Map.Entry<GangData, Long> next = allTimeIterator.next();
+        report.addAllTimeData(next.getKey().getGangName(), next.getValue());
+      }
     }
     report.saveReport();
   }
 
   // Store up to 42 dates, first in first out removal if over
-  public void filterGangData(GangData gangData) {
-    Queue<Map.Entry<LocalDate, Long>> dateBlockCountQueue = new LinkedList<>(gangData.getDateBlockCountMap().entrySet());
-    while (dateBlockCountQueue.size() > 42) {
-      dateBlockCountQueue.poll();
-    }
+  public void filterGangData(GangData... gangDatas) {
+    for (GangData gangData : gangDatas) {
+      Queue<Map.Entry<LocalDate, Long>> dateBlockCountQueue = new LinkedList<>(gangData.getDateBlockCountMap().entrySet());
+      while (dateBlockCountQueue.size() > 42) {
+        dateBlockCountQueue.poll();
+      }
 
-    LinkedHashMap<LocalDate, Long> dateBlockCountMap = new LinkedHashMap<>();
-    dateBlockCountQueue.forEach(e -> dateBlockCountMap.put(e.getKey(), e.getValue()));
-    gangData.setDateBlockCountMap(dateBlockCountMap);
-    GangDataCRUD.getInstance().saveData(gangData);
+      LinkedHashMap<LocalDate, Long> dateBlockCountMap = new LinkedHashMap<>();
+      dateBlockCountQueue.forEach(e -> dateBlockCountMap.put(e.getKey(), e.getValue()));
+      gangData.setDateBlockCountMap(dateBlockCountMap);
+      GangDataCRUD.getInstance().saveData(gangData);
+    }
+  }
+
+  @Override
+  public synchronized boolean update(GangData data) {
+    updatedGangs.add(data);
+    return super.update(data, false);
   }
 
   public void saveAllGangData() {
-    getSet().forEach(GangDataCRUD.getInstance()::saveData);
+    updatedGangs.forEach(GangDataCRUD.getInstance()::saveData);
+    updatedGangs.clear();
   }
 
   @Override

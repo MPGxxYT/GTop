@@ -9,13 +9,22 @@ import java.util.LinkedHashMap;
 
 public class Report {
   private static final String PATH = Main.getInstance().getDataFolder() + "/reports/";
-  LinkedHashMap<String, Long> topGangs = new LinkedHashMap<>();
+  LinkedHashMap<String, Long> monthTop = new LinkedHashMap<>();
+  LinkedHashMap<String, Long> weekTop = new LinkedHashMap<>();
+  LinkedHashMap<String, Long> allTimeTop = new LinkedHashMap<>();
 
-  public Report() {
+  public Report() {}
+
+  public void addMonthData(String name, Long count) {
+    monthTop.put(name, count);
   }
 
-  public void addData(String name, Long count) {
-    topGangs.put(name, count);
+  public void addWeekData(String name, Long count) {
+    weekTop.put(name, count);
+  }
+
+  public void addAllTimeData(String name, Long count) {
+    allTimeTop.put(name, count);
   }
 
   public void saveReport() {

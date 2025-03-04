@@ -71,13 +71,13 @@ set {_gang} to player's gang
 - [X] v1.1.3
   - [X] Fix & Refactor the Menu
   - [X] Refactor the GangData Saving System
+  - [X] Display the Dates of Week in GUI
+  - [X] Display the Month Name in GUI
 - [ ] v1.1.4
   - [ ] Automatic reports
   - [ ] Config setting for data length
 - [ ] v1.1.5
   - [ ] Improve report feature to allow all time, monthly & weekly.
-  - [ ] Display the Dates of Week in GUI
-  - [ ] Display the Month Name in GUI
   - [ ] Find a way to allow weeks less than 7 days
 - [ ] v1.2
   - [ ] Refactor & Optimize Code

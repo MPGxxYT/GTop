@@ -8,6 +8,7 @@ import me.mortaldev.gtop.configs.MainConfig;
 import me.mortaldev.gtop.listeners.OnGangCommand;
 import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
+import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.menuapi.GUIListener;
 import me.mortaldev.menuapi.GUIManager;
@@ -77,6 +78,7 @@ public final class Main extends JavaPlugin {
 
     // Managers (Loading data)
     GangManager.getInstance().load();
+    GangManager.getInstance().getSet().forEach(GangManager.getInstance()::filterGangData);
 
     // GUI Manager
     guiManager = new GUIManager();
