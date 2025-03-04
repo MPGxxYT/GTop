@@ -23,7 +23,7 @@ public class MainConfig extends AbstractConfig {
     String reload = super.reload();
     Main.getInstance().setPeriodicSaves(false);
     Main.getInstance().setPeriodicSaves(true);
-    GangManager.saveGangDataList();
+    GangManager.getInstance().saveAllGangData();
     return reload;
   }
 

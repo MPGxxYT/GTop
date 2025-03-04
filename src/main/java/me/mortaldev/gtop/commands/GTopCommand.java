@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class GTopCommand extends BaseCommand {
 
   @Default
-  public void openMenu(Player player){
+  public void openMenu(Player player) {
     Main.getGuiManager().openGUI(new GTopMenu(1, GTopMenu.ViewType.ALL_TIME), player);
   }
 
@@ -32,14 +32,14 @@ public class GTopCommand extends BaseCommand {
   @Subcommand("save")
   @CommandPermission("gtop.admin")
   public void saveData(CommandSender sender) {
-    sender.sendMessage("Attempting to save gang data.");
-    GangManager.saveGangDataList();
+    sender.sendMessage("Saving gang data.");
+    GangManager.getInstance().saveAllGangData();
   }
 
   @Subcommand("report")
   @CommandPermission("gtop.admin")
   public void makeReport(CommandSender sender) {
-    GangManager.makeReport();
+    GangManager.getInstance().makeReport();
     sender.sendMessage("Saving a report.");
   }
 }

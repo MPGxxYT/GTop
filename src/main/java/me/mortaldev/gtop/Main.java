@@ -9,8 +9,8 @@ import me.mortaldev.gtop.listeners.OnGangCommand;
 import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
 import me.mortaldev.gtop.modules.gang.GangManager;
-import me.mortaldev.gtop.modules.menu.GUIListener;
-import me.mortaldev.gtop.modules.menu.GUIManager;
+import me.mortaldev.menuapi.GUIListener;
+import me.mortaldev.menuapi.GUIManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,7 +76,7 @@ public final class Main extends JavaPlugin {
     mainConfig = new MainConfig();
 
     // Managers (Loading data)
-    GangManager.loadGangDataList();
+    GangManager.getInstance().load();
 
     // GUI Manager
     guiManager = new GUIManager();
@@ -115,7 +115,7 @@ public final class Main extends JavaPlugin {
     if (isPeriodicallySaving()) {
       setPeriodicSaves(false);
     }
-    GangManager.saveGangDataList();
+    GangManager.getInstance().saveAllGangData();
     getLogger().info(LABEL + " Disabled");
   }
 
@@ -129,7 +129,7 @@ public final class Main extends JavaPlugin {
         return;
       }
       long saveInterval = (20L * 60L) * mainConfig.getSaveInterval();
-      tasks.put("gangSaves", Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GangManager::saveGangDataList, saveInterval, saveInterval));
+      tasks.put("gangSaves", Bukkit.getScheduler().scheduleSyncRepeatingTask(this, GangManager.getInstance()::saveAllGangData, saveInterval, saveInterval));
     } else if (isPeriodicallySaving()) {
       Bukkit.getScheduler().cancelTask(tasks.remove("gangSaves"));
     }

@@ -10,9 +10,9 @@ import org.bukkit.event.Listener;
 public class OnGangCreate implements Listener {
 
   @EventHandler
-  public void gangCreate(GangCreateEvent event){
+  public void gangCreate(GangCreateEvent event) {
     Gang gang = event.getGang();
     GangData gangData = new GangData(gang.getName());
-    GangManager.addGangData(gangData);
+    GangManager.getInstance().add(gangData);
   }
 }

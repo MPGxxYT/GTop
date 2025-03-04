@@ -11,11 +11,11 @@ import java.util.Objects;
 
 public class YamlConfig {
 
-  private static final Main MAIN = Main.getInstance();
   public static final String FAILED_TO_LOAD_CONFIG = "[{0}.YML] Failed to load config value: {1} ({2})";
   public static final String INVALID_VALUE = "INVALID VALUE";
   public static final String OTHER_CONFIG_ERROR = "Error finding other config: ";
   public static final String RESOURCE_LOAD_ERROR = "Failed to load resource: ";
+  private static final Main MAIN = Main.getInstance();
 
   public static String failedToLoad(String configName, String configValue) {
     return failedToLoad(configName, configValue, INVALID_VALUE);

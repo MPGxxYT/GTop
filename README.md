@@ -68,7 +68,13 @@ set {_gang} to player's gang
 - [X] v1.1.2
   - [X] Improve GangData Saving System
     - [X] Only save gangData that changed since the last save.
-- [ ] v1.1.3
+- [X] v1.1.3
+  - [X] Fix & Refactor the Menu
+  - [X] Refactor the GangData Saving System
+- [ ] v1.1.4
+  - [ ] Automatic reports
+  - [ ] Config setting for data length
+- [ ] v1.1.5
   - [ ] Improve report feature to allow all time, monthly & weekly.
   - [ ] Display the Dates of Week in GUI
   - [ ] Display the Month Name in GUI

@@ -16,6 +16,7 @@ public class ExrPlayerGang extends SimpleExpression<Gang> {
   static {
     Skript.registerExpression(ExrPlayerGang.class, Gang.class, ExpressionType.PROPERTY, "%player%['s] gang");
   }
+
   private Expression<Player> player;
 
   @SuppressWarnings("NullableProblems")

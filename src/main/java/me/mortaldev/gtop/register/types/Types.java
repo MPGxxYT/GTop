@@ -13,33 +13,33 @@ public class Types {
 
   static {
     Classes.registerClass(new ClassInfo<>(Gang.class, "gang")
-        .user("gang")
-        .name("Gang")
-        .description("Represents a gang in connection with the GangsPlus Plugin")
-        .examples("%player%'s gang")
-        .defaultExpression(new EventValueExpression<>(Gang.class))
-        .parser(new Parser<>() {
+            .user("gang")
+            .name("Gang")
+            .description("Represents a gang in connection with the GangsPlus Plugin")
+            .examples("%player%'s gang")
+            .defaultExpression(new EventValueExpression<>(Gang.class))
+            .parser(new Parser<>() {
 
-          @Override
-          public @Nullable Gang parse(String s, ParseContext context) {
-            return null;
-          }
+              @Override
+              public @Nullable Gang parse(String s, ParseContext context) {
+                return null;
+              }
 
-          @Override
-          public boolean canParse(ParseContext context) {
-            return false;
-          }
+              @Override
+              public boolean canParse(ParseContext context) {
+                return false;
+              }
 
-          @Override
-          public String toString(Gang gang, int i) {
-            return gang.getName();
-          }
+              @Override
+              public String toString(Gang gang, int i) {
+                return gang.getName();
+              }
 
-          @Override
-          public String toVariableNameString(Gang gang) {
-            return "GANG-" + gang.getName();
-          }
-        })
+              @Override
+              public String toVariableNameString(Gang gang) {
+                return "GANG-" + gang.getName();
+              }
+            })
     );
   }
 

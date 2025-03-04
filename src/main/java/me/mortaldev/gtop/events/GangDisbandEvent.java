@@ -14,13 +14,14 @@ public class GangDisbandEvent extends Event {
     this.gang = gang;
   }
 
+  public static HandlerList getHandlerList() {
+    return HANDLER_LIST;
+  }
+
   public Gang getGang() {
     return gang;
   }
 
-  public static HandlerList getHandlerList() {
-    return HANDLER_LIST;
-  }
   @Override
   public @NotNull HandlerList getHandlers() {
     return HANDLER_LIST;
