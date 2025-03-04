@@ -11,19 +11,20 @@ public class Report {
   private static final String PATH = Main.getInstance().getDataFolder() + "/reports/";
   LinkedHashMap<String, Long> topGangs = new LinkedHashMap<>();
 
-  public Report() {}
+  public Report() {
+  }
 
-  public void addData(String name, Long count){
+  public void addData(String name, Long count) {
     topGangs.put(name, count);
   }
 
-  public void saveReport(){
+  public void saveReport() {
     File filePath = new File(PATH + generateReportName() + ".json");
     GSON.saveJsonObject(filePath, this);
   }
 
-  private String generateReportName(){
-    String month = GangManager.todayDate().getMonth().toString();
+  private String generateReportName() {
+    String month = GangManager.getInstance().todayDate().getMonth().toString();
     File mainPath = new File(PATH);
     if (!mainPath.exists()) {
       mainPath.mkdirs();

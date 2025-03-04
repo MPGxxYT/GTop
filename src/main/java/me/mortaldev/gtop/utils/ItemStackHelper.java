@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ItemStackHelper {
 
-  public static String serialize(ItemStack itemStack){
+  public static String serialize(ItemStack itemStack) {
     byte[] itemStackAsBytes = itemStack.serializeAsBytes();
     return Base64.getEncoder().encodeToString(itemStackAsBytes);
   }
@@ -20,11 +20,11 @@ public class ItemStackHelper {
     return ItemStack.deserializeBytes(bytes);
   }
 
-  public static Builder builder(ItemStack itemStack){
+  public static Builder builder(ItemStack itemStack) {
     return new Builder(itemStack);
   }
 
-  public static Builder builder(Material material){
+  public static Builder builder(Material material) {
     return new Builder(material);
   }
 
@@ -40,7 +40,7 @@ public class ItemStackHelper {
       this.itemStack = new ItemStack(material);
     }
 
-    public Builder lore(List<Component> lore){
+    public Builder lore(List<Component> lore) {
       ItemStack cloneItemStack = itemStack.clone();
       cloneItemStack.editMeta(itemMeta -> itemMeta.lore(lore));
 
@@ -48,18 +48,18 @@ public class ItemStackHelper {
       return this;
     }
 
-    public Builder addLore(String lore){
+    public Builder addLore(String lore) {
       return addLore(TextUtil.format(lore));
     }
 
-    public Builder addLore(Iterable<Component> components){
+    public Builder addLore(Iterable<Component> components) {
       for (Component component : components) {
         addLore(component);
       }
       return this;
     }
 
-    public Builder addLore(Component lore){
+    public Builder addLore(Component lore) {
       List<Component> loreList = this.itemStack.lore();
       if (loreList == null) {
         loreList = new ArrayList<>();
@@ -69,16 +69,16 @@ public class ItemStackHelper {
       return this;
     }
 
-    public Builder name(String name){
+    public Builder name(String name) {
       return name(TextUtil.format(name));
     }
 
-    public Builder name(Component name){
+    public Builder name(Component name) {
       this.itemStack.editMeta(itemMeta -> itemMeta.displayName(name));
       return this;
     }
 
-    public ItemStack build(){
+    public ItemStack build() {
       return itemStack;
     }
   }

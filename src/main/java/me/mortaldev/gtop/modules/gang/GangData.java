@@ -1,14 +1,16 @@
 package me.mortaldev.gtop.modules.gang;
 
+import me.mortaldev.crudapi.CRUD;
 import me.mortaldev.gtop.utils.ItemStackHelper;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class GangData {
+public class GangData implements CRUD.Identifiable {
   private static final ItemStack DEFAULT_BANNER = new ItemStack(Material.WHITE_BANNER);
   private final String gangName;
   private final LinkedHashMap<String, Long> dateBlockCountMap;
@@ -25,8 +27,8 @@ public class GangData {
 
   private GangData(String gangName, String banner) {
     this.gangName = gangName;
-    this.dateBlockCountMap = new LinkedHashMap<>(){{
-      put(localDateToString(GangManager.todayDate()), 0L);
+    this.dateBlockCountMap = new LinkedHashMap<>() {{
+      put(localDateToString(GangManager.getInstance().todayDate()), 0L);
     }};
     this.allTimeCounter = 0L;
     this.banner = banner;
@@ -94,4 +96,8 @@ public class GangData {
     return LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE);
   }
 
+  @Override
+  public String getID() {
+    return gangName;
+  }
 }

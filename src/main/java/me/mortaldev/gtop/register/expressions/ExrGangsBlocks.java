@@ -20,20 +20,16 @@ public class ExrGangsBlocks extends SimplePropertyExpression<Gang, Long> {
 
   @Override
   public @Nullable Long convert(Gang gang) {
-    GangData gangData = GangManager.getGangData(gang);
-    if (gangData == null) {
-      return null;
-    }
-    return gangData.getBlocksCountOnDate(GangManager.todayDate());
+    String name = gang.getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
+    return gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate());
   }
 
   @Override
   protected Long[] get(Event event, Gang[] source) {
-    GangData gangData = GangManager.getGangData(source[0]);
-    if (gangData == null) {
-      return null;
-    }
-    return new Long[]{gangData.getBlocksCountOnDate(GangManager.todayDate())};
+    String name = source[0].getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
+    return new Long[]{gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate())};
   }
 
   @Override
@@ -47,24 +43,22 @@ public class ExrGangsBlocks extends SimplePropertyExpression<Gang, Long> {
   @Override
   public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
     Gang[] gang = getExpr().getArray(event);
-    GangData gangData = GangManager.getGangData(gang[0]);
-    if (gangData == null) {
-      return;
-    }
+    String name = gang[0].getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
     switch (mode) {
       case ADD ->
-          gangData.setBlocksCountOnDate(GangManager.todayDate(), gangData.getBlocksCountOnDate(GangManager.todayDate()) + (Long) delta[0]);
-      case SET -> gangData.setBlocksCountOnDate(GangManager.todayDate(), (Long) delta[0]);
+              gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate()) + (Long) delta[0]);
+      case SET -> gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), (Long) delta[0]);
       case REMOVE -> {
-        long amount = gangData.getBlocksCountOnDate(GangManager.todayDate()) - (Long) delta[0];
+        long amount = gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate()) - (Long) delta[0];
         if (amount < 0) {
           amount = 0;
         }
-        gangData.setBlocksCountOnDate(GangManager.todayDate(), amount);
+        gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), amount);
       }
-      default -> gangData.setBlocksCountOnDate(GangManager.todayDate(), 0L);
+      default -> gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), 0L);
     }
-    GangManager.addToUpdatedSet(gangData);
+    GangManager.getInstance().update(gangData);
   }
 
   @Override

@@ -6,7 +6,7 @@
 
     <groupId>me.mortaldev</groupId>
     <artifactId>GTop</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
 
     <name>GTop</name>
@@ -92,6 +92,18 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>me.mortaldev</groupId>
+            <artifactId>AbstractCRUD</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.mortaldev</groupId>
+            <artifactId>MenuAPI</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>

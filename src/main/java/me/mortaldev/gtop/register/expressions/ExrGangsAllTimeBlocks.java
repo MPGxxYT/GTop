@@ -20,19 +20,15 @@ public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> 
 
   @Override
   public @Nullable Long convert(Gang gang) {
-    GangData gangData = GangManager.getGangData(gang);
-    if (gangData == null) {
-      return null;
-    }
+    String name = gang.getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
     return gangData.getAllTimeCounter();
   }
 
   @Override
   protected Long[] get(Event event, Gang[] source) {
-    GangData gangData = GangManager.getGangData(source[0]);
-    if (gangData == null) {
-      return null;
-    }
+    String name = source[0].getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
     return new Long[]{gangData.getAllTimeCounter()};
   }
 
@@ -47,10 +43,8 @@ public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> 
   @Override
   public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
     Gang[] gang = getExpr().getArray(event);
-    GangData gangData = GangManager.getGangData(gang[0]);
-    if (gangData == null) {
-      return;
-    }
+    String name = gang[0].getName();
+    GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
     switch (mode) {
       case ADD -> gangData.setAllTimeCounter(gangData.getAllTimeCounter() + (Long) delta[0]);
       case SET -> gangData.setAllTimeCounter((Long) delta[0]);
@@ -63,7 +57,7 @@ public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> 
       }
       default -> gangData.setAllTimeCounter(0L);
     }
-    GangManager.addToUpdatedSet(gangData);
+    GangManager.getInstance().update(gangData);
   }
 
   @Override
