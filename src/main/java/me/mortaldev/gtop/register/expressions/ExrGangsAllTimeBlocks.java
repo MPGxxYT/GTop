@@ -3,13 +3,11 @@ package me.mortaldev.gtop.register.expressions;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
+import javax.annotation.Nullable;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import net.brcdev.gangs.gang.Gang;
 import org.bukkit.event.Event;
-
-import javax.annotation.Nullable;
-
 
 @SuppressWarnings({"NullableProblems"})
 public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> {

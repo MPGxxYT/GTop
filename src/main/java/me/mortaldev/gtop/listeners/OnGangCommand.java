@@ -1,5 +1,7 @@
 package me.mortaldev.gtop.listeners;
 
+import java.util.HashSet;
+import java.util.UUID;
 import me.mortaldev.gtop.events.GangDisbandEvent;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
@@ -12,9 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.HashSet;
-import java.util.UUID;
 
 public class OnGangCommand implements Listener {
 

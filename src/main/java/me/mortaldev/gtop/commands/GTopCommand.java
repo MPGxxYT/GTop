@@ -36,6 +36,13 @@ public class GTopCommand extends BaseCommand {
     GangManager.getInstance().saveAllGangData();
   }
 
+  @Subcommand("filter")
+  @CommandPermission("gtop.admin")
+  public void filterData(CommandSender sender) {
+    sender.sendMessage("Filtering gang data.");
+    GangManager.getInstance().getSet().forEach(GangManager.getInstance()::filterGangData);
+  }
+
   @Subcommand("report")
   @CommandPermission("gtop.admin")
   public void makeReport(CommandSender sender) {
