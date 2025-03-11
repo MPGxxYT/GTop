@@ -12,6 +12,7 @@ import me.mortaldev.gtop.listeners.OnGangCommand;
 import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
 import me.mortaldev.gtop.modules.gang.GangManager;
+import me.mortaldev.gtop.modules.gang.TimedRunnable;
 import me.mortaldev.menuapi.GUIListener;
 import me.mortaldev.menuapi.GUIManager;
 import org.bukkit.Bukkit;
@@ -52,6 +53,8 @@ public final class Main extends JavaPlugin {
   public static void log(String message) {
     Bukkit.getLogger().info("[" + Main.getLabel() + "] " + message);
   }
+
+  private TimedRunnable reportTimer;
 
   @Override
   public void onEnable() {
@@ -109,11 +112,18 @@ public final class Main extends JavaPlugin {
     }
 
     setPeriodicSaves(true);
+    reportTimer = new TimedRunnable();
+    reportTimer.start(
+        () -> {
+          GangManager.getInstance().makeReport();
+          log("Report automatically saved.");
+        });
     getLogger().info(LABEL + " Enabled");
   }
 
   @Override
   public void onDisable() {
+    reportTimer.stop();
     if (isPeriodicallySaving()) {
       setPeriodicSaves(false);
     }

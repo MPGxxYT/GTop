@@ -67,11 +67,11 @@ set {_gang} to player's gang
 ## Plans / To-do
 - [X] v1.1.4
   - [X] Performance Hotfix
-- [ ] v1.1.5
-  - [ ] Automatic reports
-  - [ ] Config setting for data length [month based instead of count]
-  - [ ] Gang stats
+- [X] v1.1.5
+  - [X] Automatic reports [end of each month]
+  - [X] Config setting for data length [month based instead of count]
 - [ ] v1.1.6
-  - [ ] GTOP Podium 
+  - [ ] Gang stats
+  - [ ] GTOP Podium
 - [ ] v1.2
   - [ ] Refactor & Optimize Code
