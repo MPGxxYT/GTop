@@ -1,9 +1,8 @@
 package me.mortaldev.gtop.modules.gang;
 
+import java.util.HashMap;
 import me.mortaldev.crudapi.CRUD;
 import me.mortaldev.gtop.Main;
-
-import java.util.HashMap;
 
 public class GangDataCRUD extends CRUD<GangData> {
   private static final String PATH = Main.getInstance().getDataFolder() + "/gangData/";

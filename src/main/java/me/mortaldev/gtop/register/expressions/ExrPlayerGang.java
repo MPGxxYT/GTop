@@ -14,7 +14,8 @@ import org.bukkit.event.Event;
 public class ExrPlayerGang extends SimpleExpression<Gang> {
 
   static {
-    Skript.registerExpression(ExrPlayerGang.class, Gang.class, ExpressionType.PROPERTY, "%player%['s] gang");
+    Skript.registerExpression(
+        ExrPlayerGang.class, Gang.class, ExpressionType.PROPERTY, "%player%['s] gang");
   }
 
   private Expression<Player> player;
@@ -22,12 +23,13 @@ public class ExrPlayerGang extends SimpleExpression<Gang> {
   @SuppressWarnings("NullableProblems")
   @Override
   protected Gang[] get(Event event) {
-    return new Gang[]{GangsPlusApi.getPlayersGang(player.getSingle(event))};
+    return new Gang[] {GangsPlusApi.getPlayersGang(player.getSingle(event))};
   }
 
   @SuppressWarnings({"NullableProblems", "unchecked"})
   @Override
-  public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+  public boolean init(
+      Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
     this.player = (Expression<Player>) exprs[0];
     return true;
   }
@@ -48,5 +50,4 @@ public class ExrPlayerGang extends SimpleExpression<Gang> {
   public String toString(Event event, boolean b) {
     return player.getSingle(event) + "'s gang";
   }
-
 }

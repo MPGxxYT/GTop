@@ -1,10 +1,9 @@
 package me.mortaldev.gtop.modules.config;
 
+import javax.annotation.Nullable;
 import me.mortaldev.gtop.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
 
 public abstract class AbstractConfig {
   private static final String EXTENSION = ".yml";

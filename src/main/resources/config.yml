@@ -11,3 +11,7 @@ weekEnd: "Saturday"
 
 # The top x of gangs to report when using /gtop report.
 reportCount: 3
+
+# The amount of MONTHS each gang will have its data saved.
+# Note: If you lower this value, you will lose data from older months.
+dataSavingLength: 2

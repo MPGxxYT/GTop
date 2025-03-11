@@ -1,16 +1,16 @@
 package me.mortaldev.gtop.configs;
 
+import java.time.DayOfWeek;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.modules.config.AbstractConfig;
 import me.mortaldev.gtop.modules.config.YamlConfig;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.time.DayOfWeek;
-
 public class MainConfig extends AbstractConfig {
   private int saveInterval;
   private int reportCount;
+  private int dataSavingLength; // in months
   private DayOfWeek weekBegin;
   private DayOfWeek weekEnd;
 
@@ -31,7 +31,17 @@ public class MainConfig extends AbstractConfig {
   protected void loadInitialConfig() {
     super.loadInitialConfig();
     saveInterval = getConfig().getInt("saveInterval");
+    if (saveInterval < 0) {
+      setSaveInterval(0);
+    }
     reportCount = getConfig().getInt("reportCount");
+    if (reportCount < 1) {
+      setReportCount(3);
+    }
+    dataSavingLength = getConfig().getInt("dataSavingLength");
+    if (dataSavingLength < 1) {
+      setDataSavingLength(3);
+    }
     weekBegin = loadDayOfWeekValue("weekBegin", DayOfWeek.SUNDAY);
     weekEnd = loadDayOfWeekValue("weekEnd", DayOfWeek.SATURDAY);
   }
@@ -62,6 +72,15 @@ public class MainConfig extends AbstractConfig {
   public void setSaveInterval(int saveInterval) {
     this.saveInterval = saveInterval;
     setValue("saveInterval", saveInterval);
+  }
+
+  public int getDataSavingLength() {
+    return dataSavingLength;
+  }
+
+  public void setDataSavingLength(int dataSavingLength) {
+    this.dataSavingLength = dataSavingLength;
+    setValue("dataSavingLength", dataSavingLength);
   }
 
   public DayOfWeek getWeekBegin() {

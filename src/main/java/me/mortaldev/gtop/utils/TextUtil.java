@@ -1,15 +1,14 @@
 package me.mortaldev.gtop.utils;
 
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.mortaldev.gtop.records.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TextUtil {
 

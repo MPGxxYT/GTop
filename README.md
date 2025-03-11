@@ -65,18 +65,13 @@ set {_gang} to player's gang
 </details>
 
 ## Plans / To-do
-- [X] v1.1.2
-  - [X] Improve GangData Saving System
-    - [X] Only save gangData that changed since the last save.
-- [X] v1.1.3
-  - [X] Fix & Refactor the Menu
-  - [X] Refactor the GangData Saving System
-  - [X] Display the Dates of Week in GUI
-  - [X] Display the Month Name in GUI
-  - [X] Improve report feature to allow all time, monthly & weekly.
-- [ ] v1.1.4
-  - [ ] Automatic reports
-  - [ ] Config setting for data length
+- [X] v1.1.4
+  - [X] Performance Hotfix
+- [X] v1.1.5
+  - [X] Automatic reports [end of each month]
+  - [X] Config setting for data length [month based instead of count]
+- [ ] v1.1.6
   - [ ] Gang stats
+  - [ ] GTOP Podium
 - [ ] v1.2
   - [ ] Refactor & Optimize Code

@@ -1,11 +1,10 @@
 package me.mortaldev.gtop.modules;
 
+import java.io.File;
+import java.util.LinkedHashMap;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.utils.GSON;
-
-import java.io.File;
-import java.util.LinkedHashMap;
 
 public class Report {
   private static final String PATH = Main.getInstance().getDataFolder() + "/reports/";

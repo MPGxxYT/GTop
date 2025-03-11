@@ -1,13 +1,12 @@
 package me.mortaldev.gtop.modules.config;
 
-import me.mortaldev.gtop.Main;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Objects;
+import me.mortaldev.gtop.Main;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class YamlConfig {
 

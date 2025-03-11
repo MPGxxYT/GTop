@@ -1,12 +1,11 @@
 package me.mortaldev.gtop.utils;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class ItemStackHelper {
 
