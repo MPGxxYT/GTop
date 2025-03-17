@@ -124,6 +124,11 @@ public class GangManager extends CRUDManager<GangData> {
   }
 
   @Override
+  public void load() {
+    super.load();
+  }
+
+  @Override
   public CRUD<GangData> getCRUD() {
     return GangDataCRUD.getInstance();
   }
