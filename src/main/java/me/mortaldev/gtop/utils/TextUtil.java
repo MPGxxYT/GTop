@@ -99,7 +99,7 @@ public class TextUtil {
   /**
    * Formats the given string using MiniMessage format tags and returns it as a Component object.
    *
-   * @param str          the string to be formatted
+   * @param str the string to be formatted
    * @param disableReset whether to disable the reset tag or not
    * @return the formatted string as a Component object
    */
@@ -110,8 +110,8 @@ public class TextUtil {
       result = result.replaceAll("§", "&");
     }
     return MiniMessage.miniMessage()
-            .deserialize(result)
-            .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+        .deserialize(result)
+        .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
   }
 
   // Welcome Home##My love!##sgt:/home ##ttp:Click Here
@@ -152,7 +152,7 @@ public class TextUtil {
   }
 
   private static void addToClusters(
-          int index, String str, List<String> keys, HashMap<Integer, Pair<String, String>> clusters) {
+      int index, String str, List<String> keys, HashMap<Integer, Pair<String, String>> clusters) {
     String tag = "";
     String value = "";
 
@@ -171,10 +171,10 @@ public class TextUtil {
   }
 
   private static String processClusterEntry(
-          Map.Entry<Integer, Pair<String, String>> entry,
-          String past_text,
-          HashMap<Integer, Pair<String, String>> clusters,
-          List<String> out) {
+      Map.Entry<Integer, Pair<String, String>> entry,
+      String past_text,
+      HashMap<Integer, Pair<String, String>> clusters,
+      List<String> out) {
     int index = entry.getKey();
     String tag = getValueFromEntry(entry, 'k');
     String v = getValueFromEntry(entry, 'v');
@@ -200,7 +200,7 @@ public class TextUtil {
 
   // Helper function to get value from map entry's key or value.
   private static String getValueFromEntry(
-          Map.Entry<Integer, Pair<String, String>> entry, char keyOrValue) {
+      Map.Entry<Integer, Pair<String, String>> entry, char keyOrValue) {
     // If keyOrValue is 'k', get the key; otherwise, get the value.
     return keyOrValue == 'k' ? entry.getValue().first() : entry.getValue().second();
   }
@@ -226,18 +226,18 @@ public class TextUtil {
     while (hexMatcher.find()) {
       String hexCode = hexMatcher.group(1);
       stringBuilder.replace(
-              0,
-              stringBuilder.length(),
-              stringBuilder.toString().replace("&#" + hexCode, "<#" + hexCode + ">"));
+          0,
+          stringBuilder.length(),
+          stringBuilder.toString().replace("&#" + hexCode, "<#" + hexCode + ">"));
     }
 
     // Replace color format references
     for (Colors color : Colors.values()) {
       String key = "&" + color.getKey();
       String value =
-              disableReset ? "<" + color.getValue() + ">" : "<reset><" + color.getValue() + ">";
+          disableReset ? "<" + color.getValue() + ">" : "<reset><" + color.getValue() + ">";
       stringBuilder.replace(
-              0, stringBuilder.length(), stringBuilder.toString().replace(key, value));
+          0, stringBuilder.length(), stringBuilder.toString().replace(key, value));
     }
 
     // Replace decoration format references
@@ -245,7 +245,7 @@ public class TextUtil {
       String key = "&" + decoration.getKey();
       String value = "<" + decoration.getValue() + ">";
       stringBuilder.replace(
-              0, stringBuilder.length(), stringBuilder.toString().replace(key, value));
+          0, stringBuilder.length(), stringBuilder.toString().replace(key, value));
     }
 
     return stringBuilder.toString();

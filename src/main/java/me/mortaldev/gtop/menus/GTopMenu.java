@@ -13,6 +13,8 @@ import me.mortaldev.gtop.utils.TextUtil;
 import me.mortaldev.gtop.utils.Utils;
 import me.mortaldev.menuapi.InventoryButton;
 import me.mortaldev.menuapi.InventoryGUI;
+import net.brcdev.gangs.GangsPlusApi;
+import net.brcdev.gangs.gang.Gang;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -59,9 +61,9 @@ public class GTopMenu extends InventoryGUI {
   @Override
   public void decorate(Player player) {
     // Buttons
-    this.addButton(3, weeklyButton());
-    this.addButton(4, monthlyButton());
-    this.addButton(5, allTimeButton());
+    this.addButton(3, WeeklyButton());
+    this.addButton(4, MonthlyButton());
+    this.addButton(5, AllTimeButton());
     ItemStack whiteGlass =
         ItemStackHelper.builder(Material.WHITE_STAINED_GLASS_PANE).name("").addLore("").build();
     int[] glassSlots = {0, 1, 2, 6, 7, 8};
@@ -69,10 +71,14 @@ public class GTopMenu extends InventoryGUI {
       this.getInventory().setItem(i, whiteGlass);
     }
     if (page > 1) {
-      this.addButton(0, backButton());
+      this.addButton(0, BackButton());
     }
     if (maxPage > 1 && maxPage != page) {
-      this.addButton(8, nextButton());
+      this.addButton(8, NextButton());
+    }
+    Gang playersGang = GangsPlusApi.getPlayersGang(player);
+    if (playersGang != null) {
+      this.addButton(7, GangStatsButton(playersGang));
     }
 
     // Display
@@ -89,18 +95,201 @@ public class GTopMenu extends InventoryGUI {
         break;
       }
       Map.Entry<GangData, Long> next = iterator.next();
-      ItemStack bannerItem =
-          ItemStackHelper.builder(next.getKey().getBanner())
-              .name("&e#" + (i + 1 + ((page - 1) * 45)) + " &l" + next.getKey().getGangName())
-              .lore(new ArrayList<>())
-              .addLore("&7 - " + String.format("%,d", next.getValue()) + " Blocks Mined")
-              .build();
-      bannerItem.editMeta(itemMeta -> itemMeta.addItemFlags(ItemFlag.values()));
-      bannerItem.editMeta(itemMeta -> itemMeta.setUnbreakable(true));
-      this.getInventory().setItem(i + 9, bannerItem);
+      InventoryButton gangDisplayButton =
+          GangDisplayButton(next.getKey(), i + 1 + ((page - 1) * 45));
+      addButton(i + 9, gangDisplayButton);
     }
 
     super.decorate(player);
+  }
+
+  private InventoryButton GangDisplayButton(GangData gang, int placement) {
+    GangData gangData = GangManager.getInstance().getByID(gang.getGangName()).orElseThrow();
+    return new InventoryButton()
+        .creator(
+            player -> {
+              ItemStack build =
+                  ItemStackHelper.builder(gangData.getBanner())
+                      .name("&e&l#" + placement + " " + gang.getGangName())
+                      .lore(new ArrayList<>())
+                      .addLore(
+                          "&7 - "
+                              + String.format("%,d", topGangMap.get(gangData))
+                              + " Blocks Mined")
+                      .build();
+              build.editMeta(
+                  m -> {
+                    m.addItemFlags(ItemFlag.values());
+                    m.setUnbreakable(true);
+                  });
+              return build;
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              Main.getGuiManager().openGUI(new GangStatsMenu(page, viewType, gangData), player);
+            });
+  }
+
+  private InventoryButton GangStatsButton(Gang gang) {
+    GangData gangData = GangManager.getInstance().getByID(gang.getName()).orElseThrow();
+    Iterator<GangData> iterator = topGangMap.keySet().iterator();
+    int placement = 1;
+    while (iterator.hasNext()) {
+      GangData next = iterator.next();
+      if (next.equals(gangData)) {
+        break;
+      }
+      placement++;
+    }
+    int finalPlacement = placement;
+    return new InventoryButton()
+        .creator(
+            player -> {
+              ItemStack build =
+                  ItemStackHelper.builder(gangData.getBanner())
+                      .name("&e&l#" + finalPlacement + " " + gang.getName())
+                      .addLore(
+                          "&7 - "
+                              + String.format("%,d", topGangMap.get(gangData))
+                              + " Blocks Mined")
+                      .addLore("")
+                      .addLore("&7[Click to view stats]")
+                      .build();
+              build.editMeta(
+                  m -> {
+                    m.addItemFlags(ItemFlag.values());
+                    m.setUnbreakable(true);
+                  });
+              return build;
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              Main.getGuiManager().openGUI(new GangStatsMenu(page, viewType, gangData), player);
+            });
+  }
+
+  private InventoryButton WeeklyButton() {
+    return new InventoryButton()
+        .creator(
+            player -> {
+              Material material = viewType.equals(ViewType.WEEKLY) ? Material.PAPER : Material.BOOK;
+              String name = viewType.equals(ViewType.WEEKLY) ? "&e&lWeekly" : "&eWeekly";
+              String selectedLore =
+                  viewType.equals(ViewType.WEEKLY) ? "&7&l[SELECTED]" : "&7[Click to select]";
+              LocalDate today = GangManager.getInstance().todayDate();
+              int count = 0;
+              for (LocalDate date : GangManager.getInstance().todayWeek()) {
+                if (date.toString().equals(today.toString())) {
+                  break;
+                }
+                count++;
+              }
+              return ItemStackHelper.builder(material)
+                  .name(name)
+                  .addLore("&7View weekly blocks mined.")
+                  .addLore("")
+                  .addLore("&7(" + count + " days left)")
+                  .addLore("")
+                  .addLore(selectedLore)
+                  .build();
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              if (!viewType.equals(ViewType.WEEKLY)) {
+                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.WEEKLY), player);
+              }
+            });
+  }
+
+  private InventoryButton MonthlyButton() {
+    return new InventoryButton()
+        .creator(
+            player -> {
+              Material material =
+                  viewType.equals(ViewType.MONTHLY) ? Material.PAPER : Material.BOOK;
+              String name = viewType.equals(ViewType.MONTHLY) ? "&e&lMonthly" : "&eMonthly";
+              String selectedLore =
+                  viewType.equals(ViewType.MONTHLY) ? "&7&l[SELECTED]" : "&7[Click to select]";
+              LocalDate today = GangManager.getInstance().todayDate();
+              int daysLeft = YearMonth.from(today).lengthOfMonth() - today.getDayOfMonth();
+              String monthName =
+                  today.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.ENGLISH);
+              return ItemStackHelper.builder(material)
+                  .name(name)
+                  .addLore("&7View monthly blocks mined.")
+                  .addLore("")
+                  .addLore("&e&l" + monthName + " &7(" + daysLeft + " days left)")
+                  .addLore("")
+                  .addLore(selectedLore)
+                  .build();
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              if (!viewType.equals(ViewType.MONTHLY)) {
+                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.MONTHLY), player);
+              }
+            });
+  }
+
+  private InventoryButton AllTimeButton() {
+    return new InventoryButton()
+        .creator(
+            player -> {
+              Material material =
+                  viewType.equals(ViewType.ALL_TIME) ? Material.PAPER : Material.BOOK;
+              String name = viewType.equals(ViewType.ALL_TIME) ? "&e&lAll Time" : "&eAll Time";
+              String selectedLore =
+                  viewType.equals(ViewType.ALL_TIME) ? "&7&l[SELECTED]" : "&7[Click to select]";
+              return ItemStackHelper.builder(material)
+                  .name(name)
+                  .addLore("&7View all time blocks mined.")
+                  .addLore("")
+                  .addLore(selectedLore)
+                  .build();
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              if (!viewType.equals(ViewType.ALL_TIME)) {
+                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.ALL_TIME), player);
+              }
+            });
+  }
+
+  private InventoryButton BackButton() {
+    return new InventoryButton()
+        .creator(
+            player ->
+                ItemStackHelper.builder(Material.ARROW)
+                    .name("&c&lBack")
+                    .addLore("&7Click to return to previous page")
+                    .build())
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              page--;
+              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
+            });
+  }
+
+  private InventoryButton NextButton() {
+    return new InventoryButton()
+        .creator(
+            player ->
+                ItemStackHelper.builder(Material.ARROW)
+                    .name("&a&lNext")
+                    .addLore("&7Click to view next page.")
+                    .build())
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              page++;
+              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
+            });
   }
 
   public LinkedHashMap<GangData, Long> getTopAllTime(boolean sort) {
@@ -198,128 +387,6 @@ public class GTopMenu extends InventoryGUI {
       throw new RuntimeException(e);
     }
     return unsortedMap;
-  }
-
-  private InventoryButton weeklyButton() {
-    return new InventoryButton()
-        .creator(
-            player -> {
-              Material material = viewType.equals(ViewType.WEEKLY) ? Material.PAPER : Material.BOOK;
-              String name = viewType.equals(ViewType.WEEKLY) ? "&e&lWeekly" : "&eWeekly";
-              String selectedLore =
-                  viewType.equals(ViewType.WEEKLY) ? "&7&l[SELECTED]" : "&7[Click to select]";
-              LocalDate today = GangManager.getInstance().todayDate();
-              int count = 0;
-              for (LocalDate date : GangManager.getInstance().todayWeek()) {
-                if (date.toString().equals(today.toString())) {
-                  break;
-                }
-                count++;
-              }
-              return ItemStackHelper.builder(material)
-                  .name(name)
-                  .addLore("&7View weekly blocks mined.")
-                  .addLore("")
-                  .addLore("&7(" + count + " days left)")
-                  .addLore("")
-                  .addLore(selectedLore)
-                  .build();
-            })
-        .consumer(
-            event -> {
-              Player player = (Player) event.getWhoClicked();
-              if (!viewType.equals(ViewType.WEEKLY)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.WEEKLY), player);
-              }
-            });
-  }
-
-  private InventoryButton monthlyButton() {
-    return new InventoryButton()
-        .creator(
-            player -> {
-              Material material =
-                  viewType.equals(ViewType.MONTHLY) ? Material.PAPER : Material.BOOK;
-              String name = viewType.equals(ViewType.MONTHLY) ? "&e&lMonthly" : "&eMonthly";
-              String selectedLore =
-                  viewType.equals(ViewType.MONTHLY) ? "&7&l[SELECTED]" : "&7[Click to select]";
-              LocalDate today = GangManager.getInstance().todayDate();
-              int daysLeft = YearMonth.from(today).lengthOfMonth() - today.getDayOfMonth();
-              String monthName =
-                  today.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.ENGLISH);
-              return ItemStackHelper.builder(material)
-                  .name(name)
-                  .addLore("&7View monthly blocks mined.")
-                  .addLore("")
-                  .addLore("&e&l" + monthName + " &7(" + daysLeft + " days left)")
-                  .addLore("")
-                  .addLore(selectedLore)
-                  .build();
-            })
-        .consumer(
-            event -> {
-              Player player = (Player) event.getWhoClicked();
-              if (!viewType.equals(ViewType.MONTHLY)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.MONTHLY), player);
-              }
-            });
-  }
-
-  private InventoryButton allTimeButton() {
-    return new InventoryButton()
-        .creator(
-            player -> {
-              Material material =
-                  viewType.equals(ViewType.ALL_TIME) ? Material.PAPER : Material.BOOK;
-              String name = viewType.equals(ViewType.ALL_TIME) ? "&e&lAll Time" : "&eAll Time";
-              String selectedLore =
-                  viewType.equals(ViewType.ALL_TIME) ? "&7&l[SELECTED]" : "&7[Click to select]";
-              return ItemStackHelper.builder(material)
-                  .name(name)
-                  .addLore("&7View all time blocks mined.")
-                  .addLore("")
-                  .addLore(selectedLore)
-                  .build();
-            })
-        .consumer(
-            event -> {
-              Player player = (Player) event.getWhoClicked();
-              if (!viewType.equals(ViewType.ALL_TIME)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.ALL_TIME), player);
-              }
-            });
-  }
-
-  private InventoryButton backButton() {
-    return new InventoryButton()
-        .creator(
-            player ->
-                ItemStackHelper.builder(Material.ARROW)
-                    .name("&c&lBack")
-                    .addLore("&7Click to return to previous page")
-                    .build())
-        .consumer(
-            event -> {
-              Player player = (Player) event.getWhoClicked();
-              page--;
-              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
-            });
-  }
-
-  private InventoryButton nextButton() {
-    return new InventoryButton()
-        .creator(
-            player ->
-                ItemStackHelper.builder(Material.ARROW)
-                    .name("&a&lNext")
-                    .addLore("&7Click to view next page.")
-                    .build())
-        .consumer(
-            event -> {
-              Player player = (Player) event.getWhoClicked();
-              page++;
-              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
-            });
   }
 
   public enum ViewType {

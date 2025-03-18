@@ -70,9 +70,10 @@ set {_gang} to player's gang
 - [X] v1.1.5
   - [X] Automatic reports [end of each month]
   - [X] Config setting for data length [month based instead of count]
-- [ ] v1.1.6
-  - [ ] Update Command API to latest
-  - [ ] Gang stats
-  - [ ] GTOP Podium
+- [X] v1.1.6
+  - [X] Update Command API to latest
+  - [X] Gang stats
+- [ ] v1.1.7
+  - [ ] GTOP Podium (for displaying previous winners)
 - [ ] v1.2
   - [ ] Refactor & Optimize Code

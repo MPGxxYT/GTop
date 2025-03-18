@@ -1,6 +1,20 @@
 package me.mortaldev.gtop.utils;
 
 public class Utils {
+
+
+  public static String formatOrdinal(int number) {
+    if (number % 100 >= 11 && number % 100 <= 13) {
+      return number + "th";
+    }
+    return switch (number % 10) {
+      case 1 -> number + "st";
+      case 2 -> number + "nd";
+      case 3 -> number + "rd";
+      default -> number + "th";
+    };
+  }
+
   /**
    * Returns the given value clamped between the minimum and maximum values.
    *

@@ -27,12 +27,16 @@ public class ExrGangsAllTimeBlocks extends SimplePropertyExpression<Gang, Long> 
   protected Long[] get(Event event, Gang[] source) {
     String name = source[0].getName();
     GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
-    return new Long[]{gangData.getAllTimeCounter()};
+    return new Long[] {gangData.getAllTimeCounter()};
   }
 
   @Override
   public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
-    if (mode == ChangeMode.REMOVE || mode == ChangeMode.ADD || mode == ChangeMode.SET || mode == ChangeMode.RESET || mode == ChangeMode.DELETE) {
+    if (mode == ChangeMode.REMOVE
+        || mode == ChangeMode.ADD
+        || mode == ChangeMode.SET
+        || mode == ChangeMode.RESET
+        || mode == ChangeMode.DELETE) {
       return CollectionUtils.array(Long.class);
     }
     return null;

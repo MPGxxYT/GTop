@@ -7,8 +7,7 @@ import me.mortaldev.gtop.Main;
 public class GangDataCRUD extends CRUD<GangData> {
   private static final String PATH = Main.getInstance().getDataFolder() + "/gangData/";
 
-  private GangDataCRUD() {
-  }
+  private GangDataCRUD() {}
 
   public static GangDataCRUD getInstance() {
     return Singleton.INSTANCE;
