@@ -26,9 +26,12 @@ public class GangData implements CRUD.Identifiable {
 
   private GangData(String gangName, String banner) {
     this.gangName = gangName;
-    this.dateBlockCountMap = new LinkedHashMap<>() {{
-      put(localDateToString(GangManager.getInstance().todayDate()), 0L);
-    }};
+    this.dateBlockCountMap =
+        new LinkedHashMap<>() {
+          {
+            put(localDateToString(GangManager.getInstance().todayDate()), 0L);
+          }
+        };
     this.allTimeCounter = 0L;
     this.banner = banner;
   }

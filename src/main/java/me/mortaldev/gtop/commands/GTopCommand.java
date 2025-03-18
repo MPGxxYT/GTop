@@ -1,12 +1,10 @@
 package me.mortaldev.gtop.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.menus.GTopMenu;
+import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,11 +34,13 @@ public class GTopCommand extends BaseCommand {
     GangManager.getInstance().saveAllGangData();
   }
 
-  @Subcommand("filter")
+  @Subcommand("update")
+  @CommandCompletion("@gangs")
+  @Syntax("<gang name>")
   @CommandPermission("gtop.admin")
-  public void filterData(CommandSender sender) {
-    sender.sendMessage("Filtering gang data.");
-    GangManager.getInstance().getSet().forEach(GangManager.getInstance()::filterGangData);
+  public void updateGang(CommandSender sender, GangData gangData) {
+    sender.sendMessage("Updating gang data.");
+    GangManager.getInstance().loadByID(gangData.getGangName());
   }
 
   @Subcommand("report")

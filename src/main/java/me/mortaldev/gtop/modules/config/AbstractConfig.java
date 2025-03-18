@@ -37,7 +37,7 @@ public abstract class AbstractConfig {
   /**
    * Sets a value in the configuration at the given path.
    *
-   * @param path  the path of the value to set
+   * @param path the path of the value to set
    * @param value the value to set at the given path
    */
   public void setValue(@NotNull String path, @Nullable Object value) {

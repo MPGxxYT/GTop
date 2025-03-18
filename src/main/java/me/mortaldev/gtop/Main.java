@@ -2,15 +2,21 @@ package me.mortaldev.gtop;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.PaperCommandManager;
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import me.mortaldev.gtop.commands.GTopCommand;
 import me.mortaldev.gtop.configs.MainConfig;
 import me.mortaldev.gtop.listeners.OnGangCommand;
 import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
+import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.modules.gang.TimedRunnable;
 import me.mortaldev.menuapi.GUIListener;
@@ -33,6 +39,7 @@ public final class Main extends JavaPlugin {
   static GUIManager guiManager;
   static HashMap<String, Integer> tasks = new HashMap<>();
   private static MainConfig mainConfig;
+  private TimedRunnable reportTimer;
 
   public static Main getInstance() {
     return instance;
@@ -53,8 +60,6 @@ public final class Main extends JavaPlugin {
   public static void log(String message) {
     Bukkit.getLogger().info("[" + Main.getLabel() + "] " + message);
   }
-
-  private TimedRunnable reportTimer;
 
   @Override
   public void onEnable() {
@@ -99,6 +104,22 @@ public final class Main extends JavaPlugin {
 
     //    commandManager.registerCommand(new LoreCommand());
     //    commandManager.registerCommand(new RenameCommand());
+    commandManager.getCommandContexts().registerContext(GangData.class, c -> {
+      String s = c.popFirstArg();
+      Optional<GangData> gangDataOptional = GangManager.getInstance().getByID(s);
+      if (gangDataOptional.isEmpty()) {
+        throw new InvalidCommandArgument("Gang not found by that name.");
+      }
+      return gangDataOptional.get();
+    });
+    commandManager
+        .getCommandCompletions()
+        .registerCompletion(
+            "gangs",
+            c ->
+                GangManager.getInstance().getSet().stream()
+                    .map(GangData::getGangName)
+                    .collect(Collectors.toSet()));
     commandManager.registerCommand(new GTopCommand());
 
     // Skript API
@@ -112,13 +133,24 @@ public final class Main extends JavaPlugin {
     }
 
     setPeriodicSaves(true);
-    reportTimer = new TimedRunnable();
+    reportTimer = new TimedRunnable(ZoneId.of("America/New_York"));
+    startReportTimer(reportTimer);
+    getLogger().info(LABEL + " Enabled");
+  }
+
+  private void startReportTimer(TimedRunnable reportTimer) {
     reportTimer.start(
         () -> {
           GangManager.getInstance().makeReport();
           log("Report automatically saved.");
+        },
+        (date) -> {
+          int lastDayOfMonth = date.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
+          int currentDayOfMonth = date.getDayOfMonth();
+          int currentMinute = date.getMinute();
+          int currentHour = date.getHour();
+          return currentDayOfMonth == lastDayOfMonth && currentMinute >= 57 && currentHour == 23;
         });
-    getLogger().info(LABEL + " Enabled");
   }
 
   @Override

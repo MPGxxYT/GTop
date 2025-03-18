@@ -10,7 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class YamlConfig {
 
-  public static final String FAILED_TO_LOAD_CONFIG = "[{0}.YML] Failed to load config value: {1} ({2})";
+  public static final String FAILED_TO_LOAD_CONFIG =
+      "[{0}.YML] Failed to load config value: {1} ({2})";
   public static final String INVALID_VALUE = "INVALID VALUE";
   public static final String OTHER_CONFIG_ERROR = "Error finding other config: ";
   public static final String RESOURCE_LOAD_ERROR = "Failed to load resource: ";
@@ -21,7 +22,8 @@ public class YamlConfig {
   }
 
   public static String failedToLoad(String configName, String configValue, String failReason) {
-    String message = MessageFormat.format(FAILED_TO_LOAD_CONFIG, configName, configValue, failReason);
+    String message =
+        MessageFormat.format(FAILED_TO_LOAD_CONFIG, configName, configValue, failReason);
     MAIN.getLogger().warning(message);
     YamlConfig.loadResource(configName);
     return message;
@@ -109,7 +111,9 @@ public class YamlConfig {
 
   public static void reloadConfig(FileConfiguration config) {
     config = YamlConfiguration.loadConfiguration(new File(config.getCurrentPath()));
-    Reader stream = new InputStreamReader(Objects.requireNonNull(MAIN.getResource(config.getName())), StandardCharsets.UTF_8);
+    Reader stream =
+        new InputStreamReader(
+            Objects.requireNonNull(MAIN.getResource(config.getName())), StandardCharsets.UTF_8);
     YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(stream);
     config.setDefaults(defConfig);
   }

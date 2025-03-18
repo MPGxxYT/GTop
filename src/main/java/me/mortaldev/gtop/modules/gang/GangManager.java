@@ -110,6 +110,8 @@ public class GangManager extends CRUDManager<GangData> {
     GangDataCRUD.getInstance().saveData(data);
   }
 
+
+
   @Override
   public synchronized boolean update(GangData data) {
     // To prevent lag, update files only when saveAllGangData() is called
@@ -121,6 +123,11 @@ public class GangManager extends CRUDManager<GangData> {
     // Only updates files that have been changed
     updatedGangs.forEach(GangDataCRUD.getInstance()::saveData);
     updatedGangs.clear();
+  }
+
+  @Override
+  public void load() {
+    super.load();
   }
 
   @Override
