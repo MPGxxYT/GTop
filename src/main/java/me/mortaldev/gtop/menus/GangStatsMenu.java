@@ -17,7 +17,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
@@ -63,19 +65,21 @@ public class GangStatsMenu extends InventoryGUI {
     }
     ItemStack endOfMonthPane =
         ItemStackHelper.builder(Material.RED_STAINED_GLASS_PANE).name("&7[END OF MONTH]").build();
+    LocalDate localDate = GangManager.getInstance().todayDate();
+    int length = YearMonth.of(localDate.getYear(), month).lengthOfMonth();
     for (int i = 10, j = 19, k = 28, l = 37, m = 46; i < 17; i++, j++, k++, l++, m++) {
       int day = i - 9;
       getInventory().setItem(i, getDayItem(day));
       getInventory().setItem(j, getDayItem(day + 7));
       getInventory().setItem(k, getDayItem(day + 14));
       getInventory().setItem(l, getDayItem(day + 21));
-      if (day + 28 < this.month.maxLength() + 1) {
+      if (day + 28 < length+1) {
         getInventory().setItem(m, getDayItem(day + 28));
       } else {
         getInventory().setItem(m, endOfMonthPane);
       }
     }
-    Month todayMonth = GangManager.getInstance().todayDate().getMonth();
+    Month todayMonth = localDate.getMonth();
     int slot = 3;
     for (int i = 0; i < Main.getMainConfig().getDataSavingLength(); i++) {
       Month minus = todayMonth.minus(i);

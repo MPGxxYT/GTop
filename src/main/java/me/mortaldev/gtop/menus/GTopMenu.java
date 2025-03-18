@@ -142,7 +142,12 @@ public class GTopMenu extends InventoryGUI {
       }
       placement++;
     }
+    Long blocks = topGangMap.get(gangData);
+    if (blocks == null) {
+      blocks = 0L;
+    }
     int finalPlacement = placement;
+    Long finalBlocks = blocks;
     return new InventoryButton()
         .creator(
             player -> {
@@ -151,7 +156,7 @@ public class GTopMenu extends InventoryGUI {
                       .name("&e&l#" + finalPlacement + " " + gang.getName())
                       .addLore(
                           "&7 - "
-                              + String.format("%,d", topGangMap.get(gangData))
+                              + String.format("%,d", finalBlocks)
                               + " Blocks Mined")
                       .addLore("")
                       .addLore("&7[Click to view stats]")
