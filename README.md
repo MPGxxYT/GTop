@@ -74,6 +74,7 @@ set {_gang} to player's gang
   - [X] Update Command API to latest
   - [X] Gang stats
 - [ ] v1.1.7
+  - [ ] Per Player Breakdown [gang stats]
   - [ ] GTOP Podium (for displaying previous winners)
 - [ ] v1.2
   - [ ] Refactor & Optimize Code
