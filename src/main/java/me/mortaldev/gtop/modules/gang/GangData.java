@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import me.mortaldev.crudapi.CRUD;
 import me.mortaldev.gtop.utils.ItemStackHelper;
 import org.bukkit.Material;
@@ -12,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public class GangData implements CRUD.Identifiable {
   private static final ItemStack DEFAULT_BANNER = new ItemStack(Material.WHITE_BANNER);
   private final String gangName;
-  private final LinkedHashMap<String, Long> dateBlockCountMap;
+  private final LinkedHashMap<String, MemberData> memberBlockCountMap = new LinkedHashMap<>();
   private Long allTimeCounter;
   private String banner;
 
@@ -26,12 +27,6 @@ public class GangData implements CRUD.Identifiable {
 
   private GangData(String gangName, String banner) {
     this.gangName = gangName;
-    this.dateBlockCountMap =
-        new LinkedHashMap<>() {
-          {
-            put(localDateToString(GangManager.getInstance().todayDate()), 0L);
-          }
-        };
     this.allTimeCounter = 0L;
     this.banner = banner;
   }
@@ -56,38 +51,12 @@ public class GangData implements CRUD.Identifiable {
     banner = ItemStackHelper.serialize(itemStack);
   }
 
-  public Long getBlocksCountOnDate(LocalDate date) {
-    String stringDate = localDateToString(date);
-    if (dateBlockCountMap.containsKey(stringDate)) {
-      return dateBlockCountMap.get(stringDate);
-    }
-    return 0L;
-  }
-
-  public LinkedHashMap<LocalDate, Long> getDateBlockCountMap() {
-    LinkedHashMap<LocalDate, Long> returnMap = new LinkedHashMap<>();
-    for (Map.Entry<String, Long> entry : dateBlockCountMap.entrySet()) {
-      LocalDate localDate = localDateFromString(entry.getKey());
-      returnMap.put(localDate, entry.getValue());
-    }
-    return returnMap;
-  }
-
-  public void setDateBlockCountMap(LinkedHashMap<LocalDate, Long> linkedHashMap) {
-    dateBlockCountMap.clear();
-    linkedHashMap.forEach((key, value) -> dateBlockCountMap.put(localDateToString(key), value));
-  }
-
   public Long getAllTimeCounter() {
     return allTimeCounter;
   }
 
   public void setAllTimeCounter(Long allTimeCounter) {
     this.allTimeCounter = allTimeCounter;
-  }
-
-  public void setBlocksCountOnDate(LocalDate date, Long amount) {
-    dateBlockCountMap.put(localDateToString(date), amount);
   }
 
   private String localDateToString(LocalDate date) {
@@ -101,5 +70,53 @@ public class GangData implements CRUD.Identifiable {
   @Override
   public String getID() {
     return gangName;
+  }
+
+  public MemberData getMemberData(LocalDate localDate) {
+    String dateAsString = localDateToString(localDate);
+    if (memberBlockCountMap.get(dateAsString) == null) {
+      memberBlockCountMap.put(dateAsString, new MemberData());
+    }
+    return memberBlockCountMap.get(dateAsString);
+  }
+
+  public void addBlocksOnDate(LocalDate localDate, Long count, UUID uuid) {
+    getMemberData(localDate).addData(uuid, count);
+  }
+
+  public void setBlocksOnDate(LocalDate localDate, Long count, UUID uuid) {
+    getMemberData(localDate).setData(uuid, count);
+  }
+
+  public void subtractBlocksOnDate(LocalDate localDate, Long count, UUID uuid) {
+    getMemberData(localDate).subtractData(uuid, count);
+  }
+
+  public long getTotalBlocksOnDate(LocalDate localDate) {
+    return getMemberData(localDate).getTotal();
+  }
+
+  public long getBlocksOnDate(LocalDate localDate, UUID uuid) {
+    return getMemberData(localDate).getData(uuid);
+  }
+
+  public LinkedHashMap<LocalDate, MemberData> getMemberBlockCountMap() {
+    LinkedHashMap<LocalDate, MemberData> convertedMap = new LinkedHashMap<>();
+    for (Map.Entry<String, MemberData> entry : memberBlockCountMap.entrySet()) {
+      convertedMap.put(localDateFromString(entry.getKey()), entry.getValue());
+    }
+    return convertedMap;
+  }
+
+  public void setMemberBlockCountMap(LinkedHashMap<LocalDate, MemberData> memberBlockCountMap) {
+    this.memberBlockCountMap.clear();
+    for (Map.Entry<LocalDate, MemberData> entry : memberBlockCountMap.entrySet()) {
+      this.memberBlockCountMap.put(localDateToString(entry.getKey()), entry.getValue());
+    }
+  }
+
+  public void setRawMemberBlockCountMap(LinkedHashMap<String, MemberData> memberBlockCountMap) {
+    this.memberBlockCountMap.clear();
+    this.memberBlockCountMap.putAll(memberBlockCountMap);
   }
 }

@@ -1,7 +1,11 @@
 package me.mortaldev.gtop.utils;
 
-public class Utils {
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.ListIterator;
+import java.util.Map;
 
+public class Utils {
 
   public static String formatOrdinal(int number) {
     if (number % 100 >= 11 && number % 100 <= 13) {
@@ -13,6 +17,27 @@ public class Utils {
       case 3 -> number + "rd";
       default -> number + "th";
     };
+  }
+
+  /**
+   * Returns a new LinkedHashMap with the same key-value mappings as the given original
+   * LinkedHashMap, but in reverse order. The original LinkedHashMap is not modified.
+   *
+   * @param original The LinkedHashMap to reverse.
+   * @return A new LinkedHashMap with the same mappings, but in reverse order.
+   */
+  public static <K, V> LinkedHashMap<K, V> reverseMap(LinkedHashMap<K, V> original) {
+
+    LinkedHashMap<K, V> reversed = new LinkedHashMap<>();
+    ListIterator<Map.Entry<K, V>> iterator =
+        new ArrayList<>(original.entrySet()).listIterator(original.size());
+
+    while (iterator.hasPrevious()) {
+      Map.Entry<K, V> entry = iterator.previous();
+      reversed.put(entry.getKey(), entry.getValue());
+    }
+
+    return reversed;
   }
 
   /**

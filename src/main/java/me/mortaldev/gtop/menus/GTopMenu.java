@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
+import me.mortaldev.gtop.modules.gang.MemberData;
+import me.mortaldev.gtop.modules.gang.exceptions.GangDataNotFound;
 import me.mortaldev.gtop.utils.ItemStackHelper;
 import me.mortaldev.gtop.utils.TextUtil;
 import me.mortaldev.gtop.utils.Utils;
@@ -24,14 +26,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class GTopMenu extends InventoryGUI {
 
-  LinkedHashMap<GangData, Long> topGangMap;
-  int maxPage;
-  int page;
-  ViewType viewType;
+  private LinkedHashMap<GangData, Long> topGangMap;
+  private PageData pageData;
+  private int maxPage;
+  private int page;
+  private ViewType viewType;
 
-  public GTopMenu(int page, ViewType viewType) {
-    this.viewType = viewType;
-    this.page = page;
+  public GTopMenu(PageData pageData) {
+    this.pageData = pageData;
+    this.viewType = pageData.getGtopViewType();
+    this.page = pageData.getPage();
     switch (viewType) {
       case ALL_TIME -> topGangMap = getTopAllTime();
       case MONTHLY -> topGangMap = getTopMonthly();
@@ -78,7 +82,12 @@ public class GTopMenu extends InventoryGUI {
     }
     Gang playersGang = GangsPlusApi.getPlayersGang(player);
     if (playersGang != null) {
-      this.addButton(7, GangStatsButton(playersGang));
+      try {
+        this.addButton(7, GangStatsButton(playersGang));
+      } catch (GangDataNotFound e) {
+        this.getInventory().setItem(7, whiteGlass);
+        Main.warn(e.getMessage());
+      }
     }
 
     // Display
@@ -116,6 +125,8 @@ public class GTopMenu extends InventoryGUI {
                           "&7 - "
                               + String.format("%,d", topGangMap.get(gangData))
                               + " Blocks Mined")
+                      .addLore("")
+                      .addLore("&7[Click to view stats]")
                       .build();
               build.editMeta(
                   m -> {
@@ -127,12 +138,16 @@ public class GTopMenu extends InventoryGUI {
         .consumer(
             event -> {
               Player player = (Player) event.getWhoClicked();
-              Main.getGuiManager().openGUI(new GangStatsMenu(page, viewType, gangData), player);
+              Main.getGuiManager()
+                  .openGUI(new GangStatsMenu(pageData.setPage(page), gangData), player);
             });
   }
 
-  private InventoryButton GangStatsButton(Gang gang) {
-    GangData gangData = GangManager.getInstance().getByID(gang.getName()).orElseThrow();
+  private InventoryButton GangStatsButton(Gang gang) throws GangDataNotFound {
+    GangData gangData =
+        GangManager.getInstance()
+            .getByID(gang.getName())
+            .orElseThrow(() -> new GangDataNotFound(gang));
     Iterator<GangData> iterator = topGangMap.keySet().iterator();
     int placement = 1;
     while (iterator.hasNext()) {
@@ -154,10 +169,7 @@ public class GTopMenu extends InventoryGUI {
               ItemStack build =
                   ItemStackHelper.builder(gangData.getBanner())
                       .name("&e&l#" + finalPlacement + " " + gang.getName())
-                      .addLore(
-                          "&7 - "
-                              + String.format("%,d", finalBlocks)
-                              + " Blocks Mined")
+                      .addLore("&7 - " + String.format("%,d", finalBlocks) + " Blocks Mined")
                       .addLore("")
                       .addLore("&7[Click to view stats]")
                       .build();
@@ -171,7 +183,9 @@ public class GTopMenu extends InventoryGUI {
         .consumer(
             event -> {
               Player player = (Player) event.getWhoClicked();
-              Main.getGuiManager().openGUI(new GangStatsMenu(page, viewType, gangData), player);
+
+              Main.getGuiManager()
+                  .openGUI(new GangStatsMenu(pageData.setPage(page), gangData), player);
             });
   }
 
@@ -204,7 +218,10 @@ public class GTopMenu extends InventoryGUI {
             event -> {
               Player player = (Player) event.getWhoClicked();
               if (!viewType.equals(ViewType.WEEKLY)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.WEEKLY), player);
+                Main.getGuiManager()
+                    .openGUI(
+                        new GTopMenu(pageData.setPage(page).setGtopViewType(ViewType.WEEKLY)),
+                        player);
               }
             });
   }
@@ -235,7 +252,10 @@ public class GTopMenu extends InventoryGUI {
             event -> {
               Player player = (Player) event.getWhoClicked();
               if (!viewType.equals(ViewType.MONTHLY)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.MONTHLY), player);
+                Main.getGuiManager()
+                    .openGUI(
+                        new GTopMenu(pageData.setPage(page).setGtopViewType(ViewType.MONTHLY)),
+                        player);
               }
             });
   }
@@ -260,7 +280,10 @@ public class GTopMenu extends InventoryGUI {
             event -> {
               Player player = (Player) event.getWhoClicked();
               if (!viewType.equals(ViewType.ALL_TIME)) {
-                Main.getGuiManager().openGUI(new GTopMenu(page, ViewType.ALL_TIME), player);
+                Main.getGuiManager()
+                    .openGUI(
+                        new GTopMenu(pageData.setPage(page).setGtopViewType(ViewType.ALL_TIME)),
+                        player);
               }
             });
   }
@@ -277,7 +300,8 @@ public class GTopMenu extends InventoryGUI {
             event -> {
               Player player = (Player) event.getWhoClicked();
               page--;
-              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
+              Main.getGuiManager()
+                  .openGUI(new GTopMenu(pageData.setPage(page).setGtopViewType(viewType)), player);
             });
   }
 
@@ -293,7 +317,8 @@ public class GTopMenu extends InventoryGUI {
             event -> {
               Player player = (Player) event.getWhoClicked();
               page++;
-              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
+              Main.getGuiManager()
+                  .openGUI(new GTopMenu(pageData.setPage(page).setGtopViewType(viewType)), player);
             });
   }
 
@@ -321,11 +346,11 @@ public class GTopMenu extends InventoryGUI {
     HashSet<LocalDate> localDates = GangManager.getInstance().todayMonth();
     for (GangData gangData : gangDataList) {
       Long totalAmount = 0L;
-      for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
+      for (Map.Entry<LocalDate, MemberData> entry : gangData.getMemberBlockCountMap().entrySet()) {
         if (!localDates.contains(entry.getKey())) {
           continue;
         }
-        totalAmount += entry.getValue();
+        totalAmount += entry.getValue().getTotal();
       }
       if (totalAmount > 0) {
         unsortedMap.put(gangData, totalAmount);
@@ -359,11 +384,11 @@ public class GTopMenu extends InventoryGUI {
     HashSet<LocalDate> localDates = GangManager.getInstance().todayWeek();
     for (GangData gangData : gangDataList) {
       Long totalAmount = 0L;
-      for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
+      for (Map.Entry<LocalDate, MemberData> entry : gangData.getMemberBlockCountMap().entrySet()) {
         if (!localDates.contains(entry.getKey())) {
           continue;
         }
-        totalAmount += entry.getValue();
+        totalAmount += entry.getValue().getTotal();
       }
       if (totalAmount > 0) {
         unsortedMap.put(gangData, totalAmount);

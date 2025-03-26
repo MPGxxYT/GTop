@@ -1,4 +1,4 @@
-package me.mortaldev.gtop.modules.gang;
+package me.mortaldev.gtop.utils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

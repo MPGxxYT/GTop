@@ -18,7 +18,7 @@ import me.mortaldev.gtop.listeners.OnGangCreate;
 import me.mortaldev.gtop.listeners.OnGangDisband;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
-import me.mortaldev.gtop.modules.gang.TimedRunnable;
+import me.mortaldev.gtop.utils.TimedRunnable;
 import me.mortaldev.menuapi.GUIListener;
 import me.mortaldev.menuapi.GUIManager;
 import org.bukkit.Bukkit;
@@ -59,6 +59,14 @@ public final class Main extends JavaPlugin {
 
   public static void log(String message) {
     Bukkit.getLogger().info("[" + Main.getLabel() + "] " + message);
+  }
+
+  public static void warn(String message) {
+    Bukkit.getLogger().warning("[" + Main.getLabel() + "] " + message);
+  }
+
+  public static void severe(String message) {
+    Bukkit.getLogger().severe("[" + Main.getLabel() + "] " + message);
   }
 
   @Override
@@ -104,14 +112,18 @@ public final class Main extends JavaPlugin {
 
     //    commandManager.registerCommand(new LoreCommand());
     //    commandManager.registerCommand(new RenameCommand());
-    commandManager.getCommandContexts().registerContext(GangData.class, c -> {
-      String s = c.popFirstArg();
-      Optional<GangData> gangDataOptional = GangManager.getInstance().getByID(s);
-      if (gangDataOptional.isEmpty()) {
-        throw new InvalidCommandArgument("Gang not found by that name.");
-      }
-      return gangDataOptional.get();
-    });
+    commandManager
+        .getCommandContexts()
+        .registerContext(
+            GangData.class,
+            c -> {
+              String s = c.popFirstArg();
+              Optional<GangData> gangDataOptional = GangManager.getInstance().getByID(s);
+              if (gangDataOptional.isEmpty()) {
+                throw new InvalidCommandArgument("Gang not found by that name.");
+              }
+              return gangDataOptional.get();
+            });
     commandManager
         .getCommandCompletions()
         .registerCompletion(

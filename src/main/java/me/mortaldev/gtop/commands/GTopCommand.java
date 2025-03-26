@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.menus.GTopMenu;
+import me.mortaldev.gtop.menus.PageData;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import org.bukkit.command.CommandSender;
@@ -14,7 +15,7 @@ public class GTopCommand extends BaseCommand {
 
   @Default
   public void openMenu(Player player) {
-    Main.getGuiManager().openGUI(new GTopMenu(1, GTopMenu.ViewType.ALL_TIME), player);
+    Main.getGuiManager().openGUI(new GTopMenu(new PageData().setPage(1).setGtopViewType(GTopMenu.ViewType.ALL_TIME)), player);
   }
 
   @Subcommand("reload")

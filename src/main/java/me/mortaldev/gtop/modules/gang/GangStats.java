@@ -25,6 +25,11 @@ public class GangStats {
     return dateBlockCountMap.getOrDefault(date, 0L);
   }
 
+  public Long getDay(int day, int month, int year) {
+    LocalDate date = LocalDate.of(year, month, day);
+    return getDay(date);
+  }
+
   public Long getFirstDay(int day) {
     for (Map.Entry<LocalDate, Long> entry : dateBlockCountMap.entrySet()) {
       if (entry.getKey().getDayOfMonth() == day) {
@@ -34,10 +39,18 @@ public class GangStats {
     return 0L;
   }
 
+  /**
+   * Adds all the blocks in the given {@link GangData} that are from the given {@link Month} to this
+   * {@link GangStats}.
+   *
+   * @param gangData the gang data to get the blocks from
+   * @param month the month to get the blocks from
+   * @return this {@link GangStats}
+   */
   public GangStats addMonth(GangData gangData, Month month) {
-    for (Map.Entry<LocalDate, Long> entry : gangData.getDateBlockCountMap().entrySet()) {
+    for (Map.Entry<LocalDate, MemberData> entry : gangData.getMemberBlockCountMap().entrySet()) {
       if (entry.getKey().getMonth() == month) {
-        addDay(entry.getKey(), entry.getValue());
+        addDay(entry.getKey(), entry.getValue().getTotal());
       }
     }
     return this;

@@ -11,7 +11,14 @@ import me.mortaldev.crudapi.CRUD;
 import me.mortaldev.crudapi.CRUDManager;
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.menus.GTopMenu;
+import me.mortaldev.gtop.menus.PageData;
 import me.mortaldev.gtop.modules.Report;
+import me.mortaldev.gtop.utils.ItemStackHelper;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 public class GangManager extends CRUDManager<GangData> {
 
@@ -56,12 +63,9 @@ public class GangManager extends CRUDManager<GangData> {
   }
 
   public void makeReport() {
-    LinkedHashMap<GangData, Long> topMonthly =
-        new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopMonthly();
-    LinkedHashMap<GangData, Long> topWeekly =
-        new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopWeekly();
-    LinkedHashMap<GangData, Long> topAllTime =
-        new GTopMenu(1, GTopMenu.ViewType.MONTHLY).getTopAllTime();
+    LinkedHashMap<GangData, Long> topMonthly = new GTopMenu(new PageData()).getTopMonthly();
+    LinkedHashMap<GangData, Long> topWeekly = new GTopMenu(new PageData()).getTopWeekly();
+    LinkedHashMap<GangData, Long> topAllTime = new GTopMenu(new PageData()).getTopAllTime();
     int reportCount = Main.getMainConfig().getReportCount();
     Report report = new Report();
     Iterator<Map.Entry<GangData, Long>> monthlyIterator = topMonthly.entrySet().iterator();
@@ -99,18 +103,16 @@ public class GangManager extends CRUDManager<GangData> {
       oldestMonth = thisMonth - dataSavingLength;
       oldestYear = thisYear;
     }
-    LinkedHashMap<LocalDate, Long> dateBlockCountMap = data.getDateBlockCountMap();
-    dateBlockCountMap
+    LinkedHashMap<LocalDate, MemberData> memberBlockCountMap = data.getMemberBlockCountMap();
+    memberBlockCountMap
         .entrySet()
         .removeIf(
             entry ->
                 entry.getKey().getMonthValue() <= oldestMonth
                     && entry.getKey().getYear() <= oldestYear);
-    data.setDateBlockCountMap(dateBlockCountMap);
+    data.setMemberBlockCountMap(memberBlockCountMap);
     GangDataCRUD.getInstance().saveData(data);
   }
-
-
 
   @Override
   public synchronized boolean update(GangData data) {
@@ -123,6 +125,28 @@ public class GangManager extends CRUDManager<GangData> {
     // Only updates files that have been changed
     updatedGangs.forEach(GangDataCRUD.getInstance()::saveData);
     updatedGangs.clear();
+  }
+
+  public ItemStack getHead(UUID uuid, Long count) {
+    ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+    if (uuid.toString().equals(MemberData.getDefaultUuid().toString())) {
+      return ItemStackHelper.builder(skull)
+              .name("&e&l???")
+              .addLore("&f - " + String.format("%,d", count) + " Blocks Mined")
+              .build();
+    }
+    SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+    skullMeta.setOwningPlayer(offlinePlayer);
+    skull.setItemMeta(skullMeta);
+    String name = offlinePlayer.getName();
+    if (name == null) {
+      name = "???";
+    }
+    return ItemStackHelper.builder(skull)
+            .name("&e&l" + name)
+            .addLore("&f - " + String.format("%,d", count) + " Blocks Mined")
+            .build();
   }
 
   @Override
