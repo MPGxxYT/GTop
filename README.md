@@ -71,6 +71,7 @@ set {_gang} to player's gang
 - [X] v1.1.7
   - [X] Per Player Breakdown [gang stats]
 - [ ] v1.1.8
+  - [ ] GangsPlus Database Hook
   - [ ] GTOP Podium (for displaying previous winners)
 - [ ] v1.2
   - [ ] Refactor & Optimize Code
