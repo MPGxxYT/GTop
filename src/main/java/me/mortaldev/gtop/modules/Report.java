@@ -8,8 +8,8 @@ import me.mortaldev.gtop.utils.GSON;
 
 public class Report {
   private static final String PATH = Main.getInstance().getDataFolder() + "/reports/";
-  LinkedHashMap<String, Long> monthTop = new LinkedHashMap<>();
   LinkedHashMap<String, Long> weekTop = new LinkedHashMap<>();
+  LinkedHashMap<String, Long> monthTop = new LinkedHashMap<>();
   LinkedHashMap<String, Long> allTimeTop = new LinkedHashMap<>();
 
   public Report() {}

@@ -3,6 +3,7 @@ package me.mortaldev.gtop.modules.gang;
 import java.util.HashMap;
 import me.mortaldev.crudapi.CRUD;
 import me.mortaldev.gtop.Main;
+import me.mortaldev.gtop.modules.gang.adapters.DateBlockCountMapDeserializer;
 
 public class GangDataCRUD extends CRUD<GangData> {
   private static final String PATH = Main.getInstance().getDataFolder() + "/gangData/";
@@ -20,7 +21,11 @@ public class GangDataCRUD extends CRUD<GangData> {
 
   @Override
   public HashMap<Class<?>, Object> getTypeAdapterHashMap() {
-    return new HashMap<>();
+    return new HashMap<>() {
+      {
+        put(GangData.class, new DateBlockCountMapDeserializer());
+      }
+    };
   }
 
   @Override

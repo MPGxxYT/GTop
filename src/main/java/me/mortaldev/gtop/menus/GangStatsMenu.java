@@ -1,9 +1,16 @@
 package me.mortaldev.gtop.menus;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.*;
+
 import me.mortaldev.gtop.Main;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
 import me.mortaldev.gtop.modules.gang.GangStats;
+import me.mortaldev.gtop.modules.gang.MemberData;
 import me.mortaldev.gtop.utils.ItemStackHelper;
 import me.mortaldev.gtop.utils.TextUtil;
 import me.mortaldev.gtop.utils.Utils;
@@ -16,31 +23,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.YearMonth;
-import java.time.format.TextStyle;
-import java.util.Locale;
+import org.bukkit.inventory.meta.SkullMeta;
 
 public class GangStatsMenu extends InventoryGUI {
-  int page;
-  GTopMenu.ViewType viewType;
+  PageData pageData;
   GangData gangData;
   Month month;
   GangStats gangStats;
 
-  public GangStatsMenu(int page, GTopMenu.ViewType viewType, GangData gangData) {
-    this.page = page;
-    this.viewType = viewType;
+  public GangStatsMenu(PageData pageData, GangData gangData) {
+    this.pageData = pageData;
     this.gangData = gangData;
     this.month = GangManager.getInstance().todayDate().getMonth();
     this.gangStats = new GangStats().addMonth(gangData, month);
   }
 
-  public GangStatsMenu(int page, GTopMenu.ViewType viewType, GangData gangData, Month month) {
-    this.page = page;
-    this.viewType = viewType;
+  public GangStatsMenu(PageData pageData, GangData gangData, Month month) {
+    this.pageData = pageData;
     this.gangData = gangData;
     this.month = month;
     this.gangStats = new GangStats().addMonth(gangData, month);
@@ -63,22 +62,7 @@ public class GangStatsMenu extends InventoryGUI {
                   .addLore("")
                   .build());
     }
-    ItemStack endOfMonthPane =
-        ItemStackHelper.builder(Material.RED_STAINED_GLASS_PANE).name("&7[END OF MONTH]").build();
     LocalDate localDate = GangManager.getInstance().todayDate();
-    int length = YearMonth.of(localDate.getYear(), month).lengthOfMonth();
-    for (int i = 10, j = 19, k = 28, l = 37, m = 46; i < 17; i++, j++, k++, l++, m++) {
-      int day = i - 9;
-      getInventory().setItem(i, getDayItem(day));
-      getInventory().setItem(j, getDayItem(day + 7));
-      getInventory().setItem(k, getDayItem(day + 14));
-      getInventory().setItem(l, getDayItem(day + 21));
-      if (day + 28 < length+1) {
-        getInventory().setItem(m, getDayItem(day + 28));
-      } else {
-        getInventory().setItem(m, endOfMonthPane);
-      }
-    }
     Month todayMonth = localDate.getMonth();
     int slot = 3;
     for (int i = 0; i < Main.getMainConfig().getDataSavingLength(); i++) {
@@ -91,15 +75,112 @@ public class GangStatsMenu extends InventoryGUI {
       }
     }
     this.addButton(0, BackButton());
+    this.addButton(8, ViewSwitchButton());
+    switch (pageData.getGangStatsViewType()) {
+      case DAY_TOTAL -> dayTotalView();
+      case MEMBER_TOTAL -> memberTotalView();
+    }
     super.decorate(player);
   }
 
-  private ItemStack getDayItem(int day) {
+  private void memberTotalView() {
+    LinkedHashMap<UUID, Long> totalUUIDMap = new LinkedHashMap<>();
+    for (Map.Entry<LocalDate, MemberData> entry : gangData.getMemberBlockCountMap().entrySet()) {
+      if (entry.getKey().getMonthValue() == month.getValue()) {
+        HashMap<UUID, Long> map = entry.getValue().getMap();
+        LinkedHashMap<UUID, Long> finalTotalUUIDMap = totalUUIDMap;
+        map.forEach((uuid, aLong) -> finalTotalUUIDMap.merge(uuid, aLong, Long::sum));
+      }
+    }
+    LinkedHashMap<UUID, Long> sortedMembers = new LinkedHashMap<>();
+    totalUUIDMap.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue())
+        .forEachOrdered(e -> sortedMembers.put(e.getKey(), e.getValue()));
+    totalUUIDMap = Utils.reverseMap(sortedMembers);
+    Iterator<Map.Entry<UUID, Long>> iterator = totalUUIDMap.entrySet().iterator();
+    for (int i = 0, slot = 10; i < 35; i++, slot++) {
+      if (!iterator.hasNext()) {
+        this.getInventory().setItem(slot, ItemStackHelper.builder(Material.AIR).build());
+      } else {
+        Map.Entry<UUID, Long> next = iterator.next();
+        ItemStack head = GangManager.getInstance().getHead(next.getKey(), next.getValue());
+        getInventory().setItem(slot, head);
+      }
+      if (slot == 16 || slot == 25 || slot == 34 || slot == 43) {
+        slot += 2;
+      }
+    }
+  }
+
+  private void dayTotalView() {
+    LocalDate localDate = GangManager.getInstance().todayDate();
+    ItemStack endOfMonthPane =
+        ItemStackHelper.builder(Material.RED_STAINED_GLASS_PANE).name("&7[END OF MONTH]").build();
+    int length = YearMonth.of(localDate.getYear(), month).lengthOfMonth();
+    for (int i = 10, j = 19, k = 28, l = 37, m = 46; i < 17; i++, j++, k++, l++, m++) {
+      int day = i - 9;
+      addButton(i, getDayButton(day));
+      addButton(j, getDayButton(day + 7));
+      addButton(k, getDayButton(day + 14));
+      addButton(l, getDayButton(day + 21));
+      if (day + 28 < length + 1) {
+        addButton(m, getDayButton(day + 28));
+      } else {
+        getInventory().setItem(m, endOfMonthPane);
+      }
+    }
+  }
+
+  private InventoryButton ViewSwitchButton() {
+    return new InventoryButton()
+        .creator(
+            player -> {
+              ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+              SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+              skullMeta.setOwningPlayer(player);
+              skull.setItemMeta(skullMeta);
+              ItemStackHelper.Builder builder =
+                  ItemStackHelper.builder(skull)
+                      .name("&e&lViewing Type")
+                      .addLore("")
+                      .addLore("&7Day Total")
+                      .addLore("&7Member Total")
+                      .addLore("")
+                      .addLore("&7[Click to switch view]");
+              if (pageData.getGangStatsViewType() == ViewType.DAY_TOTAL) {
+                builder.setLore(TextUtil.format("&f&l Day Total"), 1);
+              } else {
+                builder.setLore(TextUtil.format("&f&l Member Total"), 2);
+              }
+              return builder.build();
+            })
+        .consumer(
+            event -> {
+              Player player = (Player) event.getWhoClicked();
+              pageData.setGangStatsViewType(ViewType.nextView(pageData.getGangStatsViewType()));
+              Main.getGuiManager().openGUI(new GangStatsMenu(pageData, gangData, month), player);
+            });
+  }
+
+  private InventoryButton getDayButton(int day) {
     ItemStackHelper.Builder noDataItem =
         ItemStackHelper.builder(Material.GRAY_STAINED_GLASS_PANE).name("").addLore("");
-    return gangStats.getFirstDay(day) > 0
-        ? getYesDataItem(day)
-        : noDataItem.name("&7" + Utils.formatOrdinal(day)).build();
+    if (gangStats.getFirstDay(day) > 0) {
+      return new InventoryButton()
+          .creator(player -> getYesDataItem(day))
+          .consumer(
+              event -> {
+                Player player = (Player) event.getWhoClicked();
+                LocalDate date =
+                    LocalDate.of(GangManager.getInstance().todayDate().getYear(), month, day);
+                Main.getGuiManager()
+                    .openGUI(new GangMemberStatsMenu(gangData, date, pageData), player);
+              });
+    } else {
+      return new InventoryButton()
+          .creator(player -> noDataItem.name("&7" + Utils.formatOrdinal(day)).build())
+          .consumer(event -> {});
+    }
   }
 
   private ItemStack getYesDataItem(int day) {
@@ -119,6 +200,8 @@ public class GangStatsMenu extends InventoryGUI {
     return yesDataItem
         .name("&e&l" + Utils.formatOrdinal(day))
         .addLore("&f - " + String.format("%,d", dayAmount) + " Blocks Mined")
+        .addLore("")
+        .addLore("&7[Click to view breakdown]")
         .build();
   }
 
@@ -146,8 +229,7 @@ public class GangStatsMenu extends InventoryGUI {
         .consumer(
             event -> {
               Player player = (Player) event.getWhoClicked();
-              Main.getGuiManager()
-                  .openGUI(new GangStatsMenu(page, viewType, gangData, month), player);
+              Main.getGuiManager().openGUI(new GangStatsMenu(pageData, gangData, month), player);
             });
   }
 
@@ -162,7 +244,19 @@ public class GangStatsMenu extends InventoryGUI {
         .consumer(
             event -> {
               Player player = (Player) event.getWhoClicked();
-              Main.getGuiManager().openGUI(new GTopMenu(page, viewType), player);
+              Main.getGuiManager().openGUI(new GTopMenu(pageData), player);
             });
+  }
+
+  public enum ViewType {
+    DAY_TOTAL,
+    MEMBER_TOTAL;
+
+    public static ViewType nextView(ViewType viewType) {
+      return switch (viewType) {
+        case DAY_TOTAL -> MEMBER_TOTAL;
+        case MEMBER_TOTAL -> DAY_TOTAL;
+      };
+    }
   }
 }

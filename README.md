@@ -43,7 +43,7 @@ The blocks a gang has mined today in EST time zone.
 
 example:
 ```java
-add 15 to gang blocks of {_gang}
+add 15 to gang blocks of player
 ```
 
 </details> 
@@ -65,16 +65,12 @@ set {_gang} to player's gang
 </details>
 
 ## Plans / To-do
-- [X] v1.1.4
-  - [X] Performance Hotfix
-- [X] v1.1.5
-  - [X] Automatic reports [end of each month]
-  - [X] Config setting for data length [month based instead of count]
 - [X] v1.1.6
   - [X] Update Command API to latest
   - [X] Gang stats
-- [ ] v1.1.7
-  - [ ] Per Player Breakdown [gang stats]
+- [X] v1.1.7
+  - [X] Per Player Breakdown [gang stats]
+- [ ] v1.1.8
   - [ ] GTOP Podium (for displaying previous winners)
 - [ ] v1.2
   - [ ] Refactor & Optimize Code

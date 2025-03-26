@@ -3,31 +3,34 @@ package me.mortaldev.gtop.register.expressions;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
+import java.time.LocalDate;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import me.mortaldev.gtop.modules.gang.GangData;
 import me.mortaldev.gtop.modules.gang.GangManager;
-import net.brcdev.gangs.gang.Gang;
+import net.brcdev.gangs.GangsPlusApi;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 @SuppressWarnings({"NullableProblems"})
-public class ExrGangsBlocks extends SimplePropertyExpression<Gang, Long> {
+public class ExrGangsBlocks extends SimplePropertyExpression<Player, Long> {
 
   static {
-    register(ExrGangsBlocks.class, Long.class, "gang['s] blocks", "gang");
+    register(ExrGangsBlocks.class, Long.class, "gang['s] blocks", "player");
   }
 
   @Override
-  public @Nullable Long convert(Gang gang) {
-    String name = gang.getName();
+  public @Nullable Long convert(Player player) {
+    String name = GangsPlusApi.getPlayersGang(player).getName();
     GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
-    return gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate());
+    return gangData.getBlocksOnDate(GangManager.getInstance().todayDate(), player.getUniqueId());
   }
 
   @Override
-  protected Long[] get(Event event, Gang[] source) {
-    String name = source[0].getName();
+  protected Long[] get(Event event, Player[] source) {
+    String name = GangsPlusApi.getPlayersGang(source[0]).getName();
     GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
-    return new Long[] {gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate())};
+    return new Long[] {gangData.getBlocksOnDate(GangManager.getInstance().todayDate(), source[0].getUniqueId())};
   }
 
   @Override
@@ -44,26 +47,16 @@ public class ExrGangsBlocks extends SimplePropertyExpression<Gang, Long> {
 
   @Override
   public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
-    Gang[] gang = getExpr().getArray(event);
-    String name = gang[0].getName();
+    Player[] players = getExpr().getArray(event);
+    UUID uuid = players[0].getUniqueId();
+    String name = GangsPlusApi.getPlayersGang(players[0]).getName();
     GangData gangData = GangManager.getInstance().getByID(name).orElseThrow();
+    LocalDate todayDate = GangManager.getInstance().todayDate();
     switch (mode) {
-      case ADD ->
-          gangData.setBlocksCountOnDate(
-              GangManager.getInstance().todayDate(),
-              gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate())
-                  + (Long) delta[0]);
-      case SET ->
-          gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), (Long) delta[0]);
-      case REMOVE -> {
-        long amount =
-            gangData.getBlocksCountOnDate(GangManager.getInstance().todayDate()) - (Long) delta[0];
-        if (amount < 0) {
-          amount = 0;
-        }
-        gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), amount);
-      }
-      default -> gangData.setBlocksCountOnDate(GangManager.getInstance().todayDate(), 0L);
+      case ADD -> gangData.addBlocksOnDate(todayDate, (Long) delta[0], uuid);
+      case SET -> gangData.setBlocksOnDate(todayDate, (Long) delta[0], uuid);
+      case REMOVE -> gangData.subtractBlocksOnDate(todayDate, (Long) delta[0], uuid);
+      default -> gangData.setBlocksOnDate(todayDate, 0L, uuid);
     }
     GangManager.getInstance().update(gangData);
   }
