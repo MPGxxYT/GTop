@@ -42,7 +42,7 @@ public class OnGangCommand implements Listener {
             return;
           }
           GangData gangData = GangManager.getInstance().getByID(gang.getName()).orElseThrow();
-          gangData.setBanner(new ItemStack(itemInMainHand.getType()));
+          gangData.setBanner(itemInMainHand);
           player.sendMessage(TextUtil.format("&eGang Banner Set!"));
         }
         case "disband" -> {
