@@ -73,6 +73,6 @@ set {_gang} to player's gang
 - [X] v1.1.8
   - [X] Bug Fix
 - [ ] v1.1.9
-  - [ ] TBD
+  - [ ] GangsPlus Database Hook
 - [ ] v1.2
   - [ ] Refactor & Optimize Code
